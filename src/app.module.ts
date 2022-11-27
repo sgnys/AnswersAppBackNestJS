@@ -17,7 +17,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       entities: [],
       bigNumberStrings: false,
       logging: true,
-      synchronize: true, //only for develop
+      synchronize: true, //@TODO only for develop
     }),
   ],
   controllers: [AppController],
