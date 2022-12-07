@@ -11,7 +11,7 @@ import { UserRoles } from 'types';
 @Entity()
 export class UserEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column()
   name: string;
