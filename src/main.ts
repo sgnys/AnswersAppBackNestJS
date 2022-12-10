@@ -8,7 +8,7 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
-      // disableErrorMessages: true, //@TODO only production
+      //disableErrorMessages: true, //@TODO only production
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
