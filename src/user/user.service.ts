@@ -60,6 +60,51 @@ export class UserService {
     };
   }
 
+  async activateAccount(registerToken): Promise<RegisterUserResponse> {
+    try {
+      const user = new UserEntity();
+      console.log(registerToken);
+
+      if (registerToken) {
+        verify(
+          registerToken,
+          process.env.JWT_ACC_ACTIVATE,
+          function (err, decodedToken) {
+            if (err) {
+              console.log('Error occurred', err);
+              throw new BadRequestException('Incorrect or Expired link');
+            }
+            const { name, email, password } = decodedToken.payload;
+            console.log(name, email, password);
+            user.name = name;
+            user.email = email;
+            user.password = password;
+          },
+        );
+      } else {
+        throw new BadRequestException('Something went wrong');
+      }
+
+      console.log('User', user);
+      const isUserExist = await this.getUserByEmail(user.email);
+      console.log('isUserExist', isUserExist);
+
+      if (isUserExist) {
+        throw new BadRequestException('This user already exist in database');
+      }
+
+      // throw new Error('cant write user in db');
+      await user.save();
+      return {
+        statusCode: 200,
+        message: 'Account has been activated',
+      };
+    } catch (err) {
+      console.log('Error in signup while account activation: ', err);
+      throw new BadRequestException('Error activating account');
+    }
+  }
+
   async getUserById(id: string): Promise<UserEntity | undefined> {
     return await UserEntity.findOne({
       where: { id },

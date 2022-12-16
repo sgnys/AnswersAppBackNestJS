@@ -13,4 +13,11 @@ export class UserController {
   ): Promise<RegisterUserResponse> {
     return this.userService.register(userRegister);
   }
+
+  @Post('/email-activate')
+  activateAccount(
+    @Body('registerToken') registerToken: string,
+  ): Promise<RegisterUserResponse> {
+    return this.userService.activateAccount(registerToken);
+  }
 }
