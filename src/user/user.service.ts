@@ -1,17 +1,29 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserEntity } from './user.entity';
 import { UserRegisterRequestDto } from './dto/user-register.req.dto';
-import { sign } from 'jsonwebtoken';
+import { sign, verify } from 'jsonwebtoken';
 import { RegisterUserResponse } from '../../types';
 import { REGEX } from '../utils/constants';
+
+interface JwtRegisterPayload {
+  name: string;
+  email: string;
+  password: string;
+}
 
 @Injectable()
 export class UserService {
   async register(
     userRegister: UserRegisterRequestDto,
   ): Promise<RegisterUserResponse> {
-    const user = new UserEntity();
-    const { email, password, confirm } = userRegister;
+    const { name, email, password, confirm } = userRegister;
+    const payload: JwtRegisterPayload = {
+      name,
+      email,
+      password,
+    };
+
+    console.log(payload);
 
     if (
       !REGEX.PASSWORD_RULE.test(password) ||
@@ -36,7 +48,7 @@ export class UserService {
       throw new BadRequestException('This user already exist in database');
     }
 
-    const token = sign({ email, password }, process.env.JWT_ACC_ACTIVATE, {
+    const token = sign({ payload }, process.env.JWT_ACC_ACTIVATE, {
       expiresIn: '20m',
     });
     console.log(token);
