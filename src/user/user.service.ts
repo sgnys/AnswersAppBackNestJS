@@ -4,6 +4,7 @@ import { UserRegisterRequestDto } from './dto/user-register.req.dto';
 import { sign, verify } from 'jsonwebtoken';
 import { RegisterUserResponse } from '../../types';
 import { REGEX } from '../utils/constants';
+import { hashPwd } from '../utils/hash-pwd';
 
 interface JwtRegisterPayload {
   name: string;
@@ -78,7 +79,7 @@ export class UserService {
             console.log(name, email, password);
             user.name = name;
             user.email = email;
-            user.password = password;
+            user.password = hashPwd(password);
           },
         );
       } else {
