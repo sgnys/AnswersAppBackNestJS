@@ -3,6 +3,13 @@ export enum UserRoles {
   MEMBER,
 }
 
+export type ActivateUserResponse = {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRoles;
+};
+
 export type RegisterUserResponse = {
   statusCode: number;
   message: string;
