@@ -10,6 +10,7 @@ import { ActivateUserResponse, RegisterUserResponse } from '../../types';
 import { REGEX } from '../utils/constants';
 import { hashPwd } from '../utils/hash-pwd';
 import { sanitizeUser } from '../utils/sanitize-user';
+import { MailService } from 'src/mail/mail.service';
 
 interface JwtRegisterPayload {
   name: string;
@@ -19,6 +20,7 @@ interface JwtRegisterPayload {
 
 @Injectable()
 export class UserService {
+  constructor(private mailService: MailService) {}
   async register(
     userRegister: UserRegisterRequestDto,
   ): Promise<RegisterUserResponse> {
@@ -58,7 +60,13 @@ export class UserService {
       expiresIn: '20m',
     });
     console.log(token);
-    console.log('SEND EMAIL'); //TODO
+    try {
+      // throw new Error('Bład wysyłki maila');
+      await this.mailService.sendRegisterLink(email, token);
+    } catch (err) {
+      console.log('Email has not been sent', err);
+      throw new BadRequestException('Email has not been sent');
+    }
 
     return {
       statusCode: 200,
@@ -127,7 +135,7 @@ export class UserService {
     try {
       // throw new Error('example error');
       await UserEntity.update({ email }, { resetLinkToken: token });
-      console.log('SEND EMAIL'); //TODO
+      await this.mailService.sendPasswordResetLink(email, token);
       return {
         statusCode: 200,
         message: 'Email has been sent, kindly follow the instructions',
