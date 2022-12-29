@@ -18,7 +18,7 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(3000); //@TODO add production PORT
+  await app.listen(process.env.PORT || 3001);
 }
 
 bootstrap();
