@@ -1,7 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { UserService } from '../user/user.service';
-import { UserEntity } from '../user/user.entity';
 import { Strategy, VerifiedCallback } from 'passport-jwt';
 
 export interface JwtPayload {
@@ -14,7 +13,7 @@ const cookieExtractor = (req: any): null | string => {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private userService: UserService) {
     super({
       jwtFromRequest: cookieExtractor,
       secretOrKey: process.env.JWT_SECRET,
@@ -22,9 +21,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload, done: VerifiedCallback) {
-    const user = await UserEntity.findOne({
-      where: { currentTokenId: payload.tokenId },
-    });
+    const user = await this.userService.getUserByCurrentTokenId(
+      payload.tokenId,
+    );
     if (!user) {
       return done(new UnauthorizedException(), false);
     }
