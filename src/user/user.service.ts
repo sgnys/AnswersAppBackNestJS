@@ -218,4 +218,12 @@ export class UserService {
       where: { email },
     });
   }
+
+  async getUserByCurrentTokenId(
+    token: string,
+  ): Promise<UserEntity | undefined> {
+    return await UserEntity.findOne({
+      where: { currentTokenId: token },
+    });
+  }
 }
