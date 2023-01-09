@@ -11,6 +11,7 @@ import { hashPwd } from '../utils/hash-pwd';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { UserEntity } from '../user/user.entity';
 import { sanitizeUser } from '../utils/sanitize-user';
+import { stringToBoolean } from '../utils/string-to-boolean';
 
 export interface JwtPayload {
   tokenId: string;
@@ -20,12 +21,14 @@ export interface JwtPayload {
 export class AuthService {
   constructor(private userService: UserService) {}
 
+  private oneDay = 60 * 60 * 12;
+
   private createToken(currentTokenId: string): {
     accessToken: string;
     expiresIn: number;
   } {
     const payload: JwtPayload = { tokenId: currentTokenId };
-    const expiresIn = 60 * 60 * 12;
+    const expiresIn = this.oneDay;
     const accessToken = sign(payload, process.env.JWT_SECRET, { expiresIn });
     return {
       accessToken,
@@ -75,12 +78,13 @@ export class AuthService {
       }
 
       const token = this.createToken(await this.generateToken(user));
-
+      console.log(this.oneDay);
       return res
         .cookie('jwt', token.accessToken, {
-          secure: false,
-          domain: 'localhost',
+          secure: stringToBoolean(process.env.COOKIE_SECURE),
+          domain: process.env.DOMAIN,
           httpOnly: true,
+          maxAge: this.oneDay,
         })
         .json(sanitizeUser(user));
     } catch (e) {
