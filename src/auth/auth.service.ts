@@ -21,7 +21,7 @@ export interface JwtPayload {
 export class AuthService {
   constructor(private userService: UserService) {}
 
-  private oneDay = 60 * 60 * 12;
+  private oneDay = 1000 * 60 * 60 * 12;
 
   private createToken(currentTokenId: string): {
     accessToken: string;
