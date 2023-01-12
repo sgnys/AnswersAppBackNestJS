@@ -12,7 +12,7 @@ import { LocalAuthGuard } from 'src/guards/local-auth.guard';
 import { AuthService } from './auth.service';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { sanitizeUser } from '../utils/sanitize-user';
+import { AdminRoleGuard } from '../guards/admin-role.guard';
 
 @Controller('api/auth')
 export class AuthController {
@@ -31,7 +31,7 @@ export class AuthController {
   }
 
   //TODO delete this method after tests
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AdminRoleGuard)
   @Get('testPathForJwtAuthGuard')
   async testPathForJwtAuthGuard(@Req() req: Request): Promise<any> {
     return req.user;
