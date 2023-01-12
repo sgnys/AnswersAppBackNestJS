@@ -13,6 +13,9 @@ import { AuthService } from './auth.service';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AdminRoleGuard } from '../guards/admin-role.guard';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { UserRoles } from 'types';
+import { Roles } from '../decorators/roles.decorator';
 
 @Controller('api/auth')
 export class AuthController {
@@ -34,6 +37,14 @@ export class AuthController {
   @UseGuards(JwtAuthGuard, AdminRoleGuard)
   @Get('testPathForJwtAuthGuard')
   async testPathForJwtAuthGuard(@Req() req: Request): Promise<any> {
+    return req.user;
+  }
+
+  //TODO delete this method after tests
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
+  @Get('testPathForRolesGuard')
+  async testPathForRolesGuard(@Req() req: Request): Promise<any> {
     return req.user;
   }
 }
