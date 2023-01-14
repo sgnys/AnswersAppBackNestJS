@@ -92,4 +92,22 @@ export class AuthService {
       throw new UnauthorizedException('Failed to log in');
     }
   }
+
+  async logout(user: UserEntity, res: Response) {
+    try {
+      // throw new Error('some error for tests');
+      user.currentTokenId = null;
+      await user.save();
+
+      res.clearCookie('jwt', {
+        secure: stringToBoolean(process.env.COOKIE_SECURE),
+        domain: process.env.DOMAIN,
+        httpOnly: true,
+      });
+      return res.json({ statusCode: 400, message: 'Logout was successful' });
+    } catch (e) {
+      console.log('Failed to log out');
+      throw new BadRequestException('Failed to log out');
+    }
+  }
 }

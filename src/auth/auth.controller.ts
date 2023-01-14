@@ -15,6 +15,9 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { UserRoles } from 'types';
 import { Roles } from '../decorators/roles.decorator';
+import { UserObj } from 'src/decorators/user-object.decorator';
+import { UserEntity } from '../user/user.entity';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('api/auth')
 export class AuthController {
@@ -30,6 +33,12 @@ export class AuthController {
     console.log(req.user);
     console.log(loginDto);
     return this.authService.login(loginDto, res);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('logout')
+  async logout(@UserObj() user: UserEntity, @Res() res: Response) {
+    return this.authService.logout(user, res);
   }
 
   //TODO delete this method after tests
