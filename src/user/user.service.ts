@@ -15,7 +15,7 @@ import { MailService } from 'src/mail/mail.service';
 interface JwtRegisterPayload {
   name: string;
   email: string;
-  password: string;
+  hashedPass: string;
 }
 
 @Injectable()
@@ -25,10 +25,13 @@ export class UserService {
     userRegister: UserRegisterRequestDto,
   ): Promise<RegisterUserResponse> {
     const { name, email, password, confirm } = userRegister;
+
+    const hashedPass = hashPwd(password);
+
     const payload: JwtRegisterPayload = {
       name,
       email,
-      password,
+      hashedPass,
     };
 
     console.log(payload);
@@ -87,11 +90,11 @@ export class UserService {
             console.log('Error occurred', err);
             throw new BadRequestException('Incorrect or Expired link');
           }
-          const { name, email, password } = decodedToken.payload;
-          console.log(name, email, password);
+          const { name, email, hashedPass } = decodedToken.payload;
+          console.log(name, email, hashedPass);
           user.name = name;
           user.email = email;
-          user.password = hashPwd(password);
+          user.password = hashedPass;
         },
       );
     } else {
@@ -216,6 +219,14 @@ export class UserService {
   async getUserByEmail(email: string): Promise<UserEntity | undefined> {
     return await UserEntity.findOne({
       where: { email },
+    });
+  }
+
+  async getUserByCurrentTokenId(
+    token: string,
+  ): Promise<UserEntity | undefined> {
+    return await UserEntity.findOne({
+      where: { currentTokenId: token },
     });
   }
 }
