@@ -8,6 +8,7 @@ import { UserEntity } from './user/user.entity';
 import { MailModule } from './mail/mail.module';
 import { AuthModule } from './auth/auth.module';
 import { AnswerModule } from './answer/answer.module';
+import { AnswerEntity } from './answer/answer.entity';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { AnswerModule } from './answer/answer.module';
       username: process.env.DB_USER_NAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [UserEntity],
+      entities: [UserEntity, AnswerEntity],
       bigNumberStrings: false,
       logging: true,
       synchronize: true, //@TODO only for develop
