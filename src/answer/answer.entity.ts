@@ -21,7 +21,7 @@ export class AnswerEntity extends BaseEntity {
   @Column({ type: 'enum', enum: CategoryCreateAnswer })
   category: CategoryCreateAnswer;
 
-  @Column({ default: 0 })
+  @Column({ type: 'int', default: 0 })
   copyBtnCount: number;
 
   @Column({
