@@ -10,3 +10,7 @@ export enum CategoryCreateAnswer {
 export type CategoryAnswer = CategoryCreateAnswer | 'all' | 'most-copied';
 
 export type CreateAnswerResponse = AnswerEntity;
+
+export interface AnswerIds {
+  ids: string[];
+}
