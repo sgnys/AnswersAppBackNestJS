@@ -1,7 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AnswerTemplateEntity } from './answer-template.entity';
 import { AnswerTemplateUpdateDto } from './dto/answer-template-update.dto';
-import { DEFAULT_TEMPLATES } from '../utils/constants';
+import { DEFAULT_ANSWERS, DEFAULT_TEMPLATES } from '../utils/constants';
+import { AnswerEntity } from '../answer/answer.entity';
 
 @Injectable()
 export class AnswerTemplateService {
@@ -47,7 +48,7 @@ export class AnswerTemplateService {
     return template;
   }
 
-  async createDefaultTemplatesForRegisterUser() {
+  async createDefaultTemplatesAndAnswersForRegisterUser() {
     const customerTemplate = await new AnswerTemplateEntity();
 
     customerTemplate.name = DEFAULT_TEMPLATES.CUSTOMER.NAME;
@@ -57,7 +58,14 @@ export class AnswerTemplateService {
 
     customerTemplate.lastParagraph = DEFAULT_TEMPLATES.CUSTOMER.LAST_PARAGRAPH;
 
+    const customerAnswer = await new AnswerEntity();
+
+    customerAnswer.text = DEFAULT_ANSWERS.CUSTOMER.CONTENT;
+    customerAnswer.category = DEFAULT_ANSWERS.CUSTOMER.CATEGORY;
+    customerAnswer.template = DEFAULT_ANSWERS.CUSTOMER.TEMPLATE;
+
     await customerTemplate.save();
+    await customerAnswer.save();
 
     const consultantTemplate = await new AnswerTemplateEntity();
 
@@ -69,6 +77,13 @@ export class AnswerTemplateService {
     consultantTemplate.lastParagraph =
       DEFAULT_TEMPLATES.CONSULTANT.LAST_PARAGRAPH;
 
+    const consultantAnswer = await new AnswerEntity();
+
+    consultantAnswer.text = DEFAULT_ANSWERS.CONSULTANT.CONTENT;
+    consultantAnswer.category = DEFAULT_ANSWERS.CONSULTANT.CATEGORY;
+    consultantAnswer.template = DEFAULT_ANSWERS.CONSULTANT.TEMPLATE;
+
     await consultantTemplate.save();
+    await consultantAnswer.save();
   }
 }
