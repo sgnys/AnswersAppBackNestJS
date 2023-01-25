@@ -1,4 +1,4 @@
 import { Controller } from '@nestjs/common';
 
-@Controller('answer-template')
+@Controller('api/answer-template')
 export class AnswerTemplateController {}
