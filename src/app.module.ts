@@ -9,6 +9,7 @@ import { MailModule } from './mail/mail.module';
 import { AuthModule } from './auth/auth.module';
 import { AnswerModule } from './answer/answer.module';
 import { AnswerEntity } from './answer/answer.entity';
+import { AnswerTemplateModule } from './answer-template/answer-template.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { AnswerEntity } from './answer/answer.entity';
     MailModule,
     AuthModule,
     AnswerModule,
+    AnswerTemplateModule,
   ],
   controllers: [AppController],
   providers: [AppService],
