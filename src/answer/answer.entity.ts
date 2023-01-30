@@ -3,10 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { CategoryCreateAnswer, Template } from 'types';
+import { AnswerTemplateEntity } from '../answer-template/answer-template.entity';
 
 @Entity()
 export class AnswerEntity extends BaseEntity {
@@ -34,4 +36,7 @@ export class AnswerEntity extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(() => AnswerTemplateEntity, (template) => template.answers)
+  answerTemplate: AnswerTemplateEntity;
 }

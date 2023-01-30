@@ -2,10 +2,12 @@ import {
   BaseEntity,
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Template } from 'types';
+import { AnswerEntity } from '../answer/answer.entity';
 
 @Entity()
 export class AnswerTemplateEntity extends BaseEntity {
@@ -26,4 +28,7 @@ export class AnswerTemplateEntity extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => AnswerEntity, (answer) => answer.answerTemplate)
+  answers: AnswerEntity[];
 }
