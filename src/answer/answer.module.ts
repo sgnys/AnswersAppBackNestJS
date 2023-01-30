@@ -4,6 +4,6 @@ import { AnswerService } from './answer.service';
 
 @Module({
   controllers: [AnswerController],
-  providers: [AnswerService]
+  providers: [AnswerService],
 })
 export class AnswerModule {}

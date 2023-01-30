@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Length } from 'class-validator';
 import { CategoryCreateAnswer, Template } from 'types';
 
 @Entity()
@@ -14,8 +13,7 @@ export class AnswerEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  @Length(3, 3000)
+  @Column({ length: 3000 })
   text: string;
 
   @Column({ type: 'enum', enum: CategoryCreateAnswer })

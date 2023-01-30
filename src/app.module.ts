@@ -9,6 +9,8 @@ import { MailModule } from './mail/mail.module';
 import { AuthModule } from './auth/auth.module';
 import { AnswerModule } from './answer/answer.module';
 import { AnswerEntity } from './answer/answer.entity';
+import { AnswerTemplateModule } from './answer-template/answer-template.module';
+import { AnswerTemplateEntity } from './answer-template/answer-template.entity';
 
 @Module({
   imports: [
@@ -20,7 +22,7 @@ import { AnswerEntity } from './answer/answer.entity';
       username: process.env.DB_USER_NAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [UserEntity, AnswerEntity],
+      entities: [UserEntity, AnswerEntity, AnswerTemplateEntity],
       bigNumberStrings: false,
       logging: true,
       synchronize: true, //@TODO only for develop
@@ -29,6 +31,7 @@ import { AnswerEntity } from './answer/answer.entity';
     MailModule,
     AuthModule,
     AnswerModule,
+    AnswerTemplateModule,
   ],
   controllers: [AppController],
   providers: [AppService],
