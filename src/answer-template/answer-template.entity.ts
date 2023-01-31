@@ -2,12 +2,14 @@ import {
   BaseEntity,
   Column,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Template } from 'types';
 import { AnswerEntity } from '../answer/answer.entity';
+import { UserEntity } from '../user/user.entity';
 
 @Entity()
 export class AnswerTemplateEntity extends BaseEntity {
@@ -31,4 +33,9 @@ export class AnswerTemplateEntity extends BaseEntity {
 
   @OneToMany(() => AnswerEntity, (answer) => answer.answerTemplate)
   answers: AnswerEntity[];
+
+  @ManyToOne(() => UserEntity, (user) => user.answerTemplates, {
+    onDelete: 'CASCADE',
+  })
+  user: UserEntity;
 }

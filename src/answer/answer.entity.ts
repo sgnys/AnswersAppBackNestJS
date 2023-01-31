@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { CategoryCreateAnswer, Template } from 'types';
 import { AnswerTemplateEntity } from '../answer-template/answer-template.entity';
+import { UserEntity } from '../user/user.entity';
 
 @Entity()
 export class AnswerEntity extends BaseEntity {
@@ -37,6 +38,13 @@ export class AnswerEntity extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => AnswerTemplateEntity, (template) => template.answers)
+  @ManyToOne(() => AnswerTemplateEntity, (template) => template.answers, {
+    onDelete: 'SET NULL',
+  })
   answerTemplate: AnswerTemplateEntity;
+
+  @ManyToOne(() => UserEntity, (user) => user.answers, {
+    onDelete: 'CASCADE',
+  })
+  user: UserEntity;
 }
