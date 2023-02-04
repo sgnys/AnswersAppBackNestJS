@@ -4,27 +4,42 @@ import { AnswerEntity } from './answer.entity';
 import { AnswerCreateDto } from './dto/answer-create.dto';
 import { AnswerUpdateDto } from './dto/answer-update.dto';
 import { AnswerIds, CategoryAnswer, CategoryCreateAnswer } from 'types';
+import { AnswerTemplateService } from '../answer-template/answer-template.service';
+import { UserEntity } from '../user/user.entity';
 
 @Injectable()
 export class AnswerService {
-  constructor(private dataSource: DataSource) {}
+  constructor(
+    private dataSource: DataSource,
+    private answerTemplateService: AnswerTemplateService,
+  ) {}
 
   async getAll(): Promise<AnswerEntity[]> {
     return await AnswerEntity.find();
   }
 
   async create(answer: AnswerCreateDto): Promise<AnswerEntity> {
-    const newItem = await new AnswerEntity();
+    const newAnswer = await new AnswerEntity();
 
-    console.log(newItem.template);
+    console.log(answer.template);
 
-    newItem.text = answer.text;
-    newItem.category = answer.category;
-    newItem.template = answer.template;
+    newAnswer.text = answer.text;
+    newAnswer.category = answer.category;
+    newAnswer.template = answer.template;
 
-    await newItem.save();
+    await newAnswer.save();
 
-    return newItem;
+    if (answer.template) {
+      const template = await this.answerTemplateService.getTemplateByName(
+        answer.template,
+      );
+
+      newAnswer.answerTemplate = template;
+
+      await newAnswer.save();
+    }
+
+    return newAnswer;
   }
 
   async update(id: string, data: AnswerUpdateDto): Promise<AnswerEntity> {
