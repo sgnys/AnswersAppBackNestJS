@@ -11,6 +11,7 @@ import { REGEX } from '../utils/constants';
 import { hashPwd } from '../utils/hash-pwd';
 import { sanitizeUser } from '../utils/sanitize-user';
 import { MailService } from 'src/mail/mail.service';
+import { AnswerTemplateService } from '../answer-template/answer-template.service';
 
 interface JwtRegisterPayload {
   name: string;
@@ -20,7 +21,10 @@ interface JwtRegisterPayload {
 
 @Injectable()
 export class UserService {
-  constructor(private mailService: MailService) {}
+  constructor(
+    private answerTemplateService: AnswerTemplateService,
+    private mailService: MailService,
+  ) {}
   async register(
     userRegister: UserRegisterRequestDto,
   ): Promise<RegisterUserResponse> {
@@ -108,9 +112,27 @@ export class UserService {
     if (isUserExist) {
       throw new BadRequestException('This user already exist in database');
     }
+
     try {
       // throw new Error('cant write user in db');
       await user.save();
+
+      const defaultTemplatesAndAnswers =
+        await this.answerTemplateService.createDefaultTemplatesAndAnswersForRegisterUser();
+
+      console.log(defaultTemplatesAndAnswers);
+
+      user.answerTemplates = [
+        defaultTemplatesAndAnswers.consultantTemplate,
+        defaultTemplatesAndAnswers.customerTemplate,
+      ];
+      user.answers = [
+        defaultTemplatesAndAnswers.consultantAnswer,
+        defaultTemplatesAndAnswers.customerAnswer,
+      ];
+
+      await user.save();
+
       console.log(user);
       return sanitizeUser(user);
     } catch (err) {

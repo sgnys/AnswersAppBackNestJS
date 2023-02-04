@@ -3,6 +3,7 @@ import { AnswerTemplateEntity } from './answer-template.entity';
 import { AnswerTemplateUpdateDto } from './dto/answer-template-update.dto';
 import { DEFAULT_ANSWERS, DEFAULT_TEMPLATES } from '../utils/constants';
 import { AnswerEntity } from '../answer/answer.entity';
+import { Template } from 'types';
 
 @Injectable()
 export class AnswerTemplateService {
@@ -13,6 +14,12 @@ export class AnswerTemplateService {
   async getTemplateById(id: string): Promise<AnswerTemplateEntity> {
     return AnswerTemplateEntity.findOne({
       where: { id },
+    });
+  }
+
+  async getTemplateByName(name: Template): Promise<AnswerTemplateEntity> {
+    return AnswerTemplateEntity.findOne({
+      where: { name },
     });
   }
 
@@ -67,6 +74,10 @@ export class AnswerTemplateService {
     await customerTemplate.save();
     await customerAnswer.save();
 
+    customerAnswer.answerTemplate = customerTemplate;
+
+    await customerAnswer.save();
+
     const consultantTemplate = await new AnswerTemplateEntity();
 
     consultantTemplate.name = DEFAULT_TEMPLATES.CONSULTANT.NAME;
@@ -85,5 +96,16 @@ export class AnswerTemplateService {
 
     await consultantTemplate.save();
     await consultantAnswer.save();
+
+    consultantAnswer.answerTemplate = consultantTemplate;
+
+    await consultantAnswer.save();
+
+    return {
+      consultantTemplate,
+      consultantAnswer,
+      customerTemplate,
+      customerAnswer,
+    };
   }
 }
