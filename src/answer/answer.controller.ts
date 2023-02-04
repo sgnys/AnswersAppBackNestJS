@@ -6,17 +6,23 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { AnswerService } from './answer.service';
 import { AnswerCreateDto } from './dto/answer-create.dto';
 import { AnswerEntity } from './answer.entity';
 import { AnswerUpdateDto } from './dto/answer-update.dto';
-import { AnswerIds, CategoryAnswer } from 'types';
+import { AnswerIds, CategoryAnswer, UserRoles } from 'types';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { Roles } from 'src/decorators/roles.decorator';
+import { RolesGuard } from '../guards/roles.guard';
 
 @Controller('api/answer')
 export class AnswerController {
   constructor(private answerService: AnswerService) {}
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ADMIN)
   @Get('/')
   getAll(): Promise<AnswerEntity[]> {
     return this.answerService.getAll();

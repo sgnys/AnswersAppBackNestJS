@@ -5,7 +5,6 @@ import { AnswerCreateDto } from './dto/answer-create.dto';
 import { AnswerUpdateDto } from './dto/answer-update.dto';
 import { AnswerIds, CategoryAnswer, CategoryCreateAnswer } from 'types';
 import { AnswerTemplateService } from '../answer-template/answer-template.service';
-import { UserEntity } from '../user/user.entity';
 
 @Injectable()
 export class AnswerService {
@@ -15,7 +14,18 @@ export class AnswerService {
   ) {}
 
   async getAll(): Promise<AnswerEntity[]> {
-    return await AnswerEntity.find();
+    const selected = ['answerEntity', 'user.id', 'user.name', 'user.email'];
+
+    const answers = await this.dataSource
+      .createQueryBuilder()
+      .select(selected)
+      .from(AnswerEntity, 'answerEntity')
+      .leftJoin('answerEntity.user', 'user')
+      .leftJoinAndSelect('answerEntity.answerTemplate', 'answerTemplate')
+      .orderBy('user.email')
+      .getMany();
+
+    return answers;
   }
 
   async create(answer: AnswerCreateDto): Promise<AnswerEntity> {
