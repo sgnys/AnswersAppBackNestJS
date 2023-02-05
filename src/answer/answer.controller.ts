@@ -16,14 +16,16 @@ import { AnswerIds, CategoryAnswer, UserRoles } from 'types';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { RolesGuard } from '../guards/roles.guard';
+import { UserObj } from '../decorators/user-object.decorator';
+import { UserEntity } from '../user/user.entity';
 
 @Controller('api/answer')
 export class AnswerController {
   constructor(private answerService: AnswerService) {}
 
+  @Get('/all')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoles.ADMIN)
-  @Get('/all')
   getAll(): Promise<AnswerEntity[]> {
     return this.answerService.getAll();
   }
