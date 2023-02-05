@@ -23,7 +23,7 @@ export class AnswerController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoles.ADMIN)
-  @Get('/')
+  @Get('/all')
   getAll(): Promise<AnswerEntity[]> {
     return this.answerService.getAll();
   }
