@@ -30,6 +30,12 @@ export class AnswerController {
     return this.answerService.getAll();
   }
 
+  @Get('/')
+  @UseGuards(JwtAuthGuard)
+  getUserAnswers(@UserObj() user: UserEntity): Promise<AnswerEntity[]> {
+    return this.answerService.getAnswers(user);
+  }
+
   @Get('/:id')
   getOne(@Param('id') id: string): Promise<AnswerEntity> {
     return this.answerService.getAnswerById(id);
