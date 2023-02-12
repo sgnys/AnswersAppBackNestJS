@@ -12,7 +12,12 @@ import { AnswerService } from './answer.service';
 import { AnswerCreateDto } from './dto/answer-create.dto';
 import { AnswerEntity } from './answer.entity';
 import { AnswerUpdateDto } from './dto/answer-update.dto';
-import { AnswerIds, CategoryAnswer, UserRoles } from 'types';
+import {
+  AnswerIds,
+  CategoryAnswer,
+  CategoryCreateAnswer,
+  UserRoles,
+} from 'types';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { RolesGuard } from '../guards/roles.guard';
@@ -37,43 +42,58 @@ export class AnswerController {
   }
 
   @Get('/:id')
-  getOne(@Param('id') id: string): Promise<AnswerEntity> {
-    return this.answerService.getAnswerById(id);
+  @UseGuards(JwtAuthGuard)
+  getOne(
+    @UserObj() user: UserEntity,
+    @Param('id') id: string,
+  ): Promise<AnswerEntity> {
+    return this.answerService.getAnswerById(user, id);
   }
 
   @Get('/sort/:category')
+  @UseGuards(JwtAuthGuard)
   getSorted(
-    @Param('category') category: CategoryAnswer,
+    @UserObj() user: UserEntity,
+    @Param('category') category: CategoryCreateAnswer | CategoryAnswer,
   ): Promise<AnswerEntity[]> {
-    return this.answerService.getAllSortedByCategory(category);
+    return this.answerService.getAllSortedByCategory(user, category);
   }
 
   @Post('/')
-  create(@Body() body: AnswerCreateDto): Promise<AnswerEntity> {
-    return this.answerService.create(body);
+  @UseGuards(JwtAuthGuard)
+  create(
+    @UserObj() user: UserEntity,
+    @Body() body: AnswerCreateDto,
+  ): Promise<AnswerEntity> {
+    return this.answerService.create(user, body);
   }
 
   @Put('/:id')
+  @UseGuards(JwtAuthGuard)
   update(
+    @UserObj() user: UserEntity,
     @Param('id') id: string,
     @Body() body: AnswerUpdateDto,
   ): Promise<AnswerEntity> {
-    return this.answerService.update(id, body);
+    return this.answerService.update(user, id, body);
   }
 
   @Put('/count/:id')
+  @UseGuards(JwtAuthGuard)
   updateCount(@Param('id') id: string): Promise<number> {
     return this.answerService.updateCopyCount(id);
   }
 
-  @Delete('/:id')
-  delete(@Param('id') id: string) {
-    return this.answerService.delete(id);
+  @Delete('/selected')
+  @UseGuards(JwtAuthGuard)
+  deleteMany(@UserObj() user: UserEntity, @Body() body: AnswerIds) {
+    console.log(body);
+    return this.answerService.deleteSelected(user, body);
   }
 
-  @Delete('/selected')
-  deleteMany(@Body() body: AnswerIds): Promise<number> {
-    console.log(body);
-    return this.answerService.deleteSelected(body);
+  @Delete('/:id')
+  @UseGuards(JwtAuthGuard)
+  delete(@UserObj() user: UserEntity, @Param('id') id: string) {
+    return this.answerService.delete(user, id);
   }
 }
