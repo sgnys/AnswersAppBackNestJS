@@ -37,12 +37,14 @@ export class AnswerController {
 
   @Get('/')
   @UseGuards(JwtAuthGuard)
+  @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
   getUserAnswers(@UserObj() user: UserEntity): Promise<AnswerEntity[]> {
     return this.answerService.getAnswers(user);
   }
 
   @Get('/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
   getOne(
     @UserObj() user: UserEntity,
     @Param('id') id: string,
@@ -51,7 +53,8 @@ export class AnswerController {
   }
 
   @Get('/sort/:category')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
   getSorted(
     @UserObj() user: UserEntity,
     @Param('category') category: CategoryCreateAnswer | CategoryAnswer,
@@ -60,7 +63,8 @@ export class AnswerController {
   }
 
   @Post('/')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
   create(
     @UserObj() user: UserEntity,
     @Body() body: AnswerCreateDto,
@@ -69,7 +73,8 @@ export class AnswerController {
   }
 
   @Put('/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
   update(
     @UserObj() user: UserEntity,
     @Param('id') id: string,
@@ -79,20 +84,23 @@ export class AnswerController {
   }
 
   @Put('/count/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
   updateCount(@Param('id') id: string): Promise<number> {
     return this.answerService.updateCopyCount(id);
   }
 
   @Delete('/selected')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
   deleteMany(@UserObj() user: UserEntity, @Body() body: AnswerIds) {
     console.log(body);
     return this.answerService.deleteSelected(user, body);
   }
 
   @Delete('/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
   delete(@UserObj() user: UserEntity, @Param('id') id: string) {
     return this.answerService.delete(user, id);
   }
