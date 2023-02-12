@@ -3,10 +3,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { UserRoles } from 'types';
+import { AnswerEntity } from '../answer/answer.entity';
+import { AnswerTemplateEntity } from '../answer-template/answer-template.entity';
 
 @Entity()
 export class UserEntity extends BaseEntity {
@@ -44,4 +47,15 @@ export class UserEntity extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => AnswerEntity, (answer) => answer.user, {
+    onDelete: 'CASCADE',
+  })
+  answers: AnswerEntity[];
+
+  @OneToMany(
+    () => AnswerTemplateEntity,
+    (answerTemplate) => answerTemplate.user,
+  )
+  answerTemplates: AnswerTemplateEntity[];
 }

@@ -3,24 +3,92 @@ import { AnswerTemplateEntity } from './answer-template.entity';
 import { AnswerTemplateUpdateDto } from './dto/answer-template-update.dto';
 import { DEFAULT_ANSWERS, DEFAULT_TEMPLATES } from '../utils/constants';
 import { AnswerEntity } from '../answer/answer.entity';
+import { Template } from 'types';
+import { DataSource } from 'typeorm';
+import { UserEntity } from '../user/user.entity';
 
 @Injectable()
 export class AnswerTemplateService {
+  constructor(private dataSource: DataSource) {}
+
   async getAll(): Promise<AnswerTemplateEntity[]> {
-    return AnswerTemplateEntity.find();
+    const selected = [
+      'AnswerTemplateEntity',
+      'user.id',
+      'user.name',
+      'user.email',
+    ];
+
+    const templates = await this.dataSource
+      .createQueryBuilder()
+      .select(selected)
+      .from(AnswerTemplateEntity, 'AnswerTemplateEntity')
+      .leftJoin('AnswerTemplateEntity.user', 'user')
+      .orderBy('user.email')
+      .getMany();
+
+    return templates;
   }
 
-  async getTemplateById(id: string): Promise<AnswerTemplateEntity> {
+  async getTemplates(user: UserEntity): Promise<AnswerTemplateEntity[]> {
+    console.log(user);
+    const { id } = user;
+
+    const selected = ['AnswerTemplateEntity'];
+
+    const templates = await this.dataSource
+      .createQueryBuilder()
+      .select(selected)
+      .from(AnswerTemplateEntity, 'AnswerTemplateEntity')
+      .leftJoin('AnswerTemplateEntity.user', 'user')
+      .where('AnswerTemplateEntity.user = :id', { id })
+      .getMany();
+
+    return templates;
+  }
+
+  async getTemplateById(
+    user: UserEntity,
+    id: string,
+  ): Promise<AnswerTemplateEntity> {
+    const { id: userId } = user;
+
+    const selected = ['AnswerTemplateEntity'];
+
+    const template = await this.dataSource
+      .createQueryBuilder()
+      .select(selected)
+      .from(AnswerTemplateEntity, 'AnswerTemplateEntity')
+      .leftJoin('AnswerTemplateEntity.user', 'user')
+      .where('AnswerTemplateEntity.id = :id AND user.id = :userId', {
+        id,
+        userId,
+      })
+      .getOne();
+
+    console.log(template);
+
+    if (!template) {
+      throw new BadRequestException(
+        `The template with this id: ${id} does not exist`,
+      );
+    }
+
+    return template;
+  }
+
+  async getTemplateByName(name: Template): Promise<AnswerTemplateEntity> {
     return AnswerTemplateEntity.findOne({
-      where: { id },
+      where: { name },
     });
   }
 
   async updateTemplate(
+    user: UserEntity,
     id: string,
     data: AnswerTemplateUpdateDto,
   ): Promise<AnswerTemplateEntity> {
-    const template = await this.getTemplateById(id);
+    const template = await this.getTemplateById(user, id);
     console.log(template);
 
     if (template === null) {
@@ -67,6 +135,10 @@ export class AnswerTemplateService {
     await customerTemplate.save();
     await customerAnswer.save();
 
+    customerAnswer.answerTemplate = customerTemplate;
+
+    await customerAnswer.save();
+
     const consultantTemplate = await new AnswerTemplateEntity();
 
     consultantTemplate.name = DEFAULT_TEMPLATES.CONSULTANT.NAME;
@@ -85,5 +157,16 @@ export class AnswerTemplateService {
 
     await consultantTemplate.save();
     await consultantAnswer.save();
+
+    consultantAnswer.answerTemplate = consultantTemplate;
+
+    await consultantAnswer.save();
+
+    return {
+      consultantTemplate,
+      consultantAnswer,
+      customerTemplate,
+      customerAnswer,
+    };
   }
 }

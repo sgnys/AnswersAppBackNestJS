@@ -4,31 +4,93 @@ import { AnswerEntity } from './answer.entity';
 import { AnswerCreateDto } from './dto/answer-create.dto';
 import { AnswerUpdateDto } from './dto/answer-update.dto';
 import { AnswerIds, CategoryAnswer, CategoryCreateAnswer } from 'types';
+import { AnswerTemplateService } from '../answer-template/answer-template.service';
+import { UserEntity } from '../user/user.entity';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AnswerService {
-  constructor(private dataSource: DataSource) {}
+  constructor(
+    private dataSource: DataSource,
+    private answerTemplateService: AnswerTemplateService,
+    private userService: UserService,
+  ) {}
 
   async getAll(): Promise<AnswerEntity[]> {
-    return await AnswerEntity.find();
+    const selected = ['answerEntity', 'user.id', 'user.name', 'user.email'];
+
+    const answers = await this.dataSource
+      .createQueryBuilder()
+      .select(selected)
+      .from(AnswerEntity, 'answerEntity')
+      .leftJoin('answerEntity.user', 'user')
+      .leftJoinAndSelect('answerEntity.answerTemplate', 'answerTemplate')
+      .orderBy('user.email')
+      .getMany();
+
+    return answers;
   }
 
-  async create(answer: AnswerCreateDto): Promise<AnswerEntity> {
-    const newItem = await new AnswerEntity();
+  async getAnswers(user: UserEntity): Promise<AnswerEntity[]> {
+    console.log(user);
+    const { id } = user;
 
-    console.log(newItem.template);
+    const selected = ['answerEntity'];
 
-    newItem.text = answer.text;
-    newItem.category = answer.category;
-    newItem.template = answer.template;
+    const answers = await this.dataSource
+      .createQueryBuilder()
+      .select(selected)
+      .from(AnswerEntity, 'answerEntity')
+      .leftJoin('answerEntity.user', 'user')
+      .leftJoinAndSelect('answerEntity.answerTemplate', 'answerTemplate')
+      .where('answerEntity.user = :id', { id })
+      .orderBy('answerEntity.createdAt', 'DESC')
+      .getMany();
 
-    await newItem.save();
-
-    return newItem;
+    return answers;
   }
 
-  async update(id: string, data: AnswerUpdateDto): Promise<AnswerEntity> {
-    const answer = await this.getAnswerById(id);
+  async create(
+    user: UserEntity,
+    answer: AnswerCreateDto,
+  ): Promise<AnswerEntity> {
+    const newAnswer = await new AnswerEntity();
+
+    const { id } = user;
+
+    console.log(answer.template);
+
+    const template = answer.template
+      ? await this.answerTemplateService.getTemplateByName(answer.template)
+      : null;
+
+    newAnswer.text = answer.text;
+    newAnswer.category = answer.category;
+    newAnswer.template = answer.template;
+
+    await newAnswer.save();
+
+    newAnswer.answerTemplate = template;
+
+    await newAnswer.save();
+
+    const oneUser = await this.userService.getUserById(id);
+
+    newAnswer.user = oneUser;
+
+    console.log(oneUser);
+
+    await newAnswer.save();
+
+    return await this.getAnswerById(user, newAnswer.id);
+  }
+
+  async update(
+    user: UserEntity,
+    id: string,
+    data: AnswerUpdateDto,
+  ): Promise<AnswerEntity> {
+    const answer = await this.getAnswerById(user, id);
     console.log(answer);
 
     if (answer === null) {
@@ -39,9 +101,27 @@ export class AnswerService {
 
     console.log(data);
 
+    if (!data.template) {
+      answer.template = null;
+      answer.category = data.category;
+      answer.text = data.text;
+
+      answer.answerTemplate = null;
+
+      await answer.save();
+
+      return answer;
+    }
+
     answer.template = data.template;
     answer.category = data.category;
     answer.text = data.text;
+
+    const template = await this.answerTemplateService.getTemplateByName(
+      data.template,
+    );
+
+    answer.answerTemplate = template;
 
     await answer.save();
 
@@ -65,59 +145,126 @@ export class AnswerService {
     return affected;
   }
 
-  async getAnswerById(id: string): Promise<AnswerEntity | undefined> {
-    return await AnswerEntity.findOne({
-      where: { id },
-    });
+  async getAnswerById(user: UserEntity, id: string): Promise<AnswerEntity> {
+    const { id: userId } = user;
+
+    const selected = ['answerEntity'];
+
+    const answer = await this.dataSource
+      .createQueryBuilder()
+      .select(selected)
+      .from(AnswerEntity, 'answerEntity')
+      .leftJoin('answerEntity.user', 'user')
+      .leftJoinAndSelect('answerEntity.answerTemplate', 'answerTemplate')
+      .where('answerEntity.id = :id AND user.id = :userId', { id, userId })
+      .getOne();
+
+    console.log(answer);
+
+    if (!answer) {
+      throw new BadRequestException(
+        `The answer with this id: ${id} does not exist`,
+      );
+    }
+
+    return answer;
   }
 
   async getAllSortedByCategory(
-    category: CategoryAnswer,
+    user: UserEntity,
+    category: CategoryCreateAnswer | CategoryAnswer,
   ): Promise<AnswerEntity[]> {
     console.log(category);
+
+    const { id } = user;
+    const selected = ['answerEntity'];
+
     if (
       category === CategoryCreateAnswer.IT ||
       category === CategoryCreateAnswer.PREPAID ||
       category === CategoryCreateAnswer.TELCO ||
       category === CategoryCreateAnswer.OTHER
     ) {
-      return await AnswerEntity.find({
-        where: {
-          category: category,
-        },
-      });
-    } else if (category === 'all') {
-      return await AnswerEntity.find();
-    } else if (category === 'most-copied') {
-      return await AnswerEntity.find({
-        order: {
-          copyBtnCount: 'DESC',
-        },
-      });
+      const answers = await this.dataSource
+        .createQueryBuilder()
+        .select(selected)
+        .from(AnswerEntity, 'answerEntity')
+        .leftJoin('answerEntity.user', 'user')
+        .leftJoinAndSelect('answerEntity.answerTemplate', 'answerTemplate')
+        .where('user.id = :id AND answerEntity.category = :category', {
+          id,
+          category,
+        })
+        .orderBy('answerEntity.createdAt', 'DESC')
+        .getMany();
+
+      return answers;
+    } else if (category === CategoryAnswer.ALL) {
+      const answers = await this.dataSource
+        .createQueryBuilder()
+        .select(selected)
+        .from(AnswerEntity, 'answerEntity')
+        .leftJoin('answerEntity.user', 'user')
+        .leftJoinAndSelect('answerEntity.answerTemplate', 'answerTemplate')
+        .where('user.id = :id ', {
+          id,
+        })
+        .orderBy('answerEntity.createdAt', 'DESC')
+        .getMany();
+
+      return answers;
+    } else if (category === CategoryAnswer.MOST_COPIED) {
+      const answers = await this.dataSource
+        .createQueryBuilder()
+        .select(selected)
+        .from(AnswerEntity, 'answerEntity')
+        .leftJoin('answerEntity.user', 'user')
+        .leftJoinAndSelect('answerEntity.answerTemplate', 'answerTemplate')
+        .where('user.id = :id ', {
+          id,
+        })
+        .orderBy('answerEntity.copyBtnCount', 'DESC')
+        .getMany();
+
+      return answers;
     } else {
       throw new BadRequestException('No answer category was marked');
     }
   }
 
-  async delete(id: string) {
-    await AnswerEntity.delete(id);
+  async delete(user: UserEntity, id: string) {
+    const answer = await this.getAnswerById(user, id);
+    console.log(answer);
+    await answer.remove();
+
+    return {
+      codeStatus: 200,
+      message: `The answer has been removed from the list`,
+    };
   }
 
-  async deleteSelected(body: AnswerIds): Promise<number> {
+  async deleteSelected(user: UserEntity, body: AnswerIds) {
     console.log(body.ids);
+    const { id } = user;
     const { ids } = body;
 
-    const results = await this.dataSource
+    const answers = await this.dataSource
       .createQueryBuilder()
-      .delete()
-      .from(AnswerEntity)
-      .where('answer_entity.id IN (:...ids)', {
+      .select('answerEntity')
+      .from(AnswerEntity, 'answerEntity')
+      .leftJoin('answerEntity.user', 'user')
+      .where('user.id = :id AND answerEntity.id IN (:...ids)', {
+        id,
         ids,
       })
-      .execute();
+      .getMany();
 
-    console.log(results.affected);
+    const result = await AnswerEntity.remove(answers);
+    console.log(result);
 
-    return results.affected;
+    return {
+      codeStatus: 200,
+      message: `Selected answers has been removed from the list`,
+    };
   }
 }
