@@ -13,7 +13,7 @@ import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { AuthLoginReqDto } from 'src/auth/dto/auth-login-req.dto';
-import { ActivateUserResponse, UserRoles } from 'types';
+import { UserLoginReg, UserLoginRes, UserRoles } from 'types';
 import { Roles } from '../decorators/roles.decorator';
 import { UserObj } from 'src/decorators/user-object.decorator';
 import { UserEntity } from '../user/user.entity';
@@ -47,10 +47,10 @@ export class AuthController {
   @Post('login')
   @ApiBody({ type: AuthLoginReqDto })
   login(
-    @Body() loginDto: AuthLoginReqDto,
+    @Body() loginDto: UserLoginReg,
     @Req() req: Request,
     @Res() res: Response,
-  ): Promise<ActivateUserResponse> {
+  ): Promise<UserLoginRes> {
     console.log(req.user);
     console.log(loginDto);
     return this.authService.login(loginDto, res);

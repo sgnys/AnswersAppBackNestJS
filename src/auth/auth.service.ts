@@ -11,8 +11,7 @@ import { hashPwd } from '../utils/hash-pwd';
 import { UserEntity } from '../user/user.entity';
 import { sanitizeUser } from '../utils/sanitize-user';
 import { stringToBoolean } from '../utils/string-to-boolean';
-import { ActivateUserResponse } from '../../types';
-import { AuthLoginReqDto } from './dto/auth-login-req.dto';
+import { UserLoginReg, UserLoginRes } from 'types';
 
 export interface JwtPayload {
   tokenId: string;
@@ -64,10 +63,7 @@ export class AuthService {
     return user;
   }
 
-  async login(
-    loginDto: AuthLoginReqDto,
-    res: Response,
-  ): Promise<ActivateUserResponse> {
+  async login(loginDto: UserLoginReg, res: Response): Promise<UserLoginRes> {
     console.log(loginDto);
     try {
       const user = await UserEntity.findOne({
