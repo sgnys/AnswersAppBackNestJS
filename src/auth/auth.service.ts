@@ -110,7 +110,7 @@ export class AuthService {
         domain: process.env.DOMAIN,
         httpOnly: true,
       });
-      return res.json({ statusCode: 400, message: 'Logout was successful' });
+      return res.json({ statusCode: 200, message: 'Logout was successful' });
     } catch (e) {
       console.log('Failed to log out');
       throw new BadRequestException('Failed to log out');

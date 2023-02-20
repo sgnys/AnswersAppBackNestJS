@@ -23,6 +23,8 @@ import {
   ApiBody,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
+  ApiOkResponse,
+  ApiSecurity,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -34,14 +36,14 @@ import { AuthLoginResDto } from './dto/auth-login-res.dto';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
   @ApiCreatedResponse({
-    description: 'Returns User data',
-    status: 201,
+    description:
+      'Returns User data in Response body. Swagger UI does not support cookie authenticated.',
     type: AuthLoginResDto,
   })
   @ApiBadRequestResponse({ description: 'Invalid login data!' })
   @ApiUnauthorizedResponse({ description: 'User cannot register. Try again!' })
+  @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiBody({ type: AuthLoginReqDto })
   login(
@@ -54,9 +56,15 @@ export class AuthController {
     return this.authService.login(loginDto, res);
   }
 
+  @ApiSecurity('api_key')
+  @ApiOkResponse({ description: 'Logout was successful' })
+  @ApiBadRequestResponse({ description: 'Failed to log out' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(AuthGuard('jwt'))
   @Post('logout')
-  async logout(@UserObj() user: UserEntity, @Res() res: Response) {
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
+  logout(@UserObj() user: UserEntity, @Res() res: Response) {
     return this.authService.logout(user, res);
   }
 
