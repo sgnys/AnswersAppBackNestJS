@@ -29,6 +29,15 @@ async function bootstrap() {
     )
     .setVersion('1.0')
     .addTag('Answers App')
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'api_key',
+        in: 'cookie',
+        description: 'Enter JWT Token',
+      },
+      'api_key',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);
