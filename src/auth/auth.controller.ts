@@ -10,26 +10,45 @@ import {
 import { Request, Response } from 'express';
 import { LocalAuthGuard } from 'src/guards/local-auth.guard';
 import { AuthService } from './auth.service';
-import { AuthLoginDto } from './dto/auth-login.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
-import { UserRoles } from 'types';
+import { AuthLoginReqDto } from 'src/auth/dto/auth-login-req.dto';
+import { ActivateUserResponse, UserRoles } from 'types';
 import { Roles } from '../decorators/roles.decorator';
 import { UserObj } from 'src/decorators/user-object.decorator';
 import { UserEntity } from '../user/user.entity';
 import { AuthGuard } from '@nestjs/passport';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { AuthLoginResDto } from './dto/auth-login-res.dto';
 
+@ApiInternalServerErrorResponse({ description: 'Please try later.' })
 @Controller('api/auth')
+@ApiTags('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
+  @ApiCreatedResponse({
+    description: 'Returns User data',
+    status: 201,
+    type: AuthLoginResDto,
+  })
+  @ApiBadRequestResponse({ description: 'Invalid login data!' })
+  @ApiUnauthorizedResponse({ description: 'User cannot register. Try again!' })
   @Post('login')
-  async login(
-    @Body() loginDto: AuthLoginDto,
+  @ApiBody({ type: AuthLoginReqDto })
+  login(
+    @Body() loginDto: AuthLoginReqDto,
     @Req() req: Request,
     @Res() res: Response,
-  ): Promise<any> {
+  ): Promise<ActivateUserResponse> {
     console.log(req.user);
     console.log(loginDto);
     return this.authService.login(loginDto, res);
