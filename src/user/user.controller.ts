@@ -1,16 +1,60 @@
 import { Body, Controller, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserRegisterRequestDto } from './dto/user-register.req.dto';
-import { ActivateUserResponse, RegisterUserResponse } from '../../types';
+import { UserRegisterReqDto } from './dto/user-register.req.dto';
+import {
+  ActivateUserResponse,
+  RegisterUserResponse,
+  UserRegister,
+} from 'types';
 import { ResetPasswordRequestDto } from './dto/reset-password.req.dto';
+import {
+  ConfirmPasswordExceptionResDto,
+  NoSentEmailExceptionResDto,
+  PatternPasswordExceptionResDto,
+  UserExistExceptionResDto,
+} from './dto/swagger-exceptions/register-exception.res.dto';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiExtraModels,
+  ApiInternalServerErrorResponse,
+  ApiResponse,
+  ApiTags,
+  refs,
+} from '@nestjs/swagger';
 
+@ApiTags('User')
+@ApiInternalServerErrorResponse({ description: 'Please try later.' })
+@ApiExtraModels(
+  PatternPasswordExceptionResDto,
+  ConfirmPasswordExceptionResDto,
+  UserExistExceptionResDto,
+  NoSentEmailExceptionResDto,
+)
 @Controller('api/user')
 export class UserController {
   constructor(private userService: UserService) {}
 
+  @ApiResponse({
+    description: 'Email has been sent, kindly activate your account',
+    status: 201,
+  })
+  @ApiBadRequestResponse({
+    description: 'Schemas of exceptions',
+    schema: {
+      anyOf: refs(
+        PatternPasswordExceptionResDto,
+        ConfirmPasswordExceptionResDto,
+        UserExistExceptionResDto,
+        NoSentEmailExceptionResDto,
+      ),
+    },
+  })
   @Post('/register')
+  @ApiBody({ type: UserRegisterReqDto })
   register(
-    @Body() userRegister: UserRegisterRequestDto,
+    @Body()
+    userRegister: UserRegister,
   ): Promise<RegisterUserResponse> {
     return this.userService.register(userRegister);
   }

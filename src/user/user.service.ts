@@ -4,9 +4,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserEntity } from './user.entity';
-import { UserRegisterRequestDto } from './dto/user-register.req.dto';
+import { UserRegisterReqDto } from './dto/user-register.req.dto';
 import { sign, verify } from 'jsonwebtoken';
-import { ActivateUserResponse, RegisterUserResponse } from '../../types';
+import { ActivateUserResponse, RegisterUserResponse } from 'types';
 import { REGEX } from '../utils/constants';
 import { hashPwd } from '../utils/hash-pwd';
 import { sanitizeUser } from '../utils/sanitize-user';
@@ -26,7 +26,7 @@ export class UserService {
     private mailService: MailService,
   ) {}
   async register(
-    userRegister: UserRegisterRequestDto,
+    userRegister: UserRegisterReqDto,
   ): Promise<RegisterUserResponse> {
     const { name, email, password, confirm } = userRegister;
 
@@ -51,7 +51,7 @@ export class UserService {
 
     if (password !== confirm) {
       throw new BadRequestException(
-        'password and confirm password must be equal',
+        'Password and confirm password must be equal',
       );
     }
 
@@ -76,7 +76,7 @@ export class UserService {
     }
 
     return {
-      statusCode: 200,
+      status: 201,
       message: 'Email has been sent, kindly activate your account',
     };
   }
@@ -162,7 +162,7 @@ export class UserService {
       await UserEntity.update({ email }, { resetLinkToken: token });
       await this.mailService.sendPasswordResetLink(email, token);
       return {
-        statusCode: 200,
+        status: 200,
         message: 'Email has been sent, kindly follow the instructions',
       };
     } catch (err) {
@@ -223,7 +223,7 @@ export class UserService {
       user.password = hashPwd(newPass);
       await user.save();
       return {
-        statusCode: 200,
+        status: 200,
         message: 'Your password has been changed.',
       };
     } catch (err) {

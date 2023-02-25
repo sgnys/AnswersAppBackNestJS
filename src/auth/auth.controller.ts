@@ -32,7 +32,7 @@ import { AuthLoginResDto } from './dto/auth-login-res.dto';
 
 @ApiInternalServerErrorResponse({ description: 'Please try later.' })
 @Controller('api/auth')
-@ApiTags('auth')
+@ApiTags('Auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
