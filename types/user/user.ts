@@ -1,4 +1,5 @@
 import { AuthLoginReqDto } from '../../src/auth/dto/auth-login-req.dto';
+import { UserRegisterReqDto } from '../../src/user/dto/user-register.req.dto';
 
 export enum UserRoles {
   ADMIN = 1,
@@ -9,6 +10,8 @@ export type UserLoginReg = AuthLoginReqDto;
 
 export type UserLoginRes = ActivateUserResponse;
 
+export type UserRegister = UserRegisterReqDto;
+
 export interface ActivateUserResponse {
   id: string;
   name: string;
@@ -17,6 +20,6 @@ export interface ActivateUserResponse {
 }
 
 export type RegisterUserResponse = {
-  statusCode: number;
+  status: number;
   message: string;
 };

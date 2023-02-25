@@ -1,4 +1,4 @@
 export interface ErrorRes {
-  statusCode: number;
+  status: number;
   message: string;
 }

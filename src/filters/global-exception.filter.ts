@@ -14,7 +14,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    const statusCode =
+    const status =
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
@@ -23,9 +23,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         ? exception.message
         : 'Please try later.';
     console.error(exception);
-    const errRes: ErrorRes = { statusCode, message };
+    const errRes: ErrorRes = { status, message };
     console.log(errRes);
 
-    response.status(statusCode).json(errRes);
+    response.status(status).json(errRes);
   }
 }
