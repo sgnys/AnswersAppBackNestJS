@@ -1,7 +1,7 @@
 import { UserEntity } from '../user/user.entity';
-import { ActivateUserResponse } from '../../types';
+import { UserAccountActivationRes } from 'types';
 
-export const sanitizeUser = (user: UserEntity): ActivateUserResponse => {
+export const sanitizeUser = (user: UserEntity): UserAccountActivationRes => {
   const { id, role, email, name } = user;
 
   return { id, role, email, name };
