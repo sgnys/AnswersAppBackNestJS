@@ -30,7 +30,10 @@ import {
 } from '@nestjs/swagger';
 import { AuthLoginResDto } from './dto/auth-login-res.dto';
 
-@ApiInternalServerErrorResponse({ description: 'Please try later.' })
+@ApiInternalServerErrorResponse({
+  description: 'Internal server error',
+  schema: { example: { status: 500, message: 'Please try later.' } },
+})
 @Controller('api/auth')
 @ApiTags('Auth')
 export class AuthController {
@@ -38,11 +41,19 @@ export class AuthController {
 
   @ApiCreatedResponse({
     description:
-      'Returns User data in Response body. Swagger UI does not support cookie authenticated.',
+      'Returns User data in Response. Swagger UI does not support cookie authenticated. After correct login, copy the JWT token from BE, to use it for authorization. ',
     type: AuthLoginResDto,
   })
-  @ApiBadRequestResponse({ description: 'Invalid login data!' })
-  @ApiUnauthorizedResponse({ description: 'User cannot register. Try again!' })
+  @ApiBadRequestResponse({
+    description: 'Invalid login data!',
+    schema: { example: { status: 400, message: 'Invalid login data!' } },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized',
+    schema: {
+      example: { status: 401, message: 'User cannot register. Try again!' },
+    },
+  })
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiBody({ type: AuthLoginReqDto })
@@ -57,9 +68,18 @@ export class AuthController {
   }
 
   @ApiSecurity('api_key')
-  @ApiOkResponse({ description: 'Logout was successful' })
-  @ApiBadRequestResponse({ description: 'Failed to log out' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiOkResponse({
+    description: 'Successful logout',
+    schema: { example: { status: 200, message: 'Logout was successful' } },
+  })
+  @ApiBadRequestResponse({
+    description: 'Logout error',
+    schema: { example: { status: 400, message: 'Failed to log out' } },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized',
+    schema: { example: { status: 401, message: 'Unauthorized' } },
+  })
   @UseGuards(AuthGuard('jwt'))
   @Post('logout')
   @UseGuards(JwtAuthGuard, RolesGuard)

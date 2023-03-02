@@ -10,7 +10,11 @@ export class AuthLoginResDto {
   @IsNotEmpty()
   id: string;
 
-  @ApiProperty({ enum: UserRoles })
+  @ApiProperty({
+    description: 'UserRoles: 1-ADMIN, 2-MEMBER',
+    example: 2,
+    enum: UserRoles,
+  })
   @IsEnum(UserRoles)
   role: UserRoles;
 
