@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { RegisterUserResponse } from 'types';
 
-export class ConfirmPasswordExceptionResDto implements RegisterUserResponse {
+export class ConfirmPasswordExceptionResDto {
   @ApiProperty({ description: 'This is real possible status', example: 400 })
   status: number;
 
@@ -12,7 +11,7 @@ export class ConfirmPasswordExceptionResDto implements RegisterUserResponse {
   message: string;
 }
 
-export class PatternPasswordExceptionResDto implements RegisterUserResponse {
+export class PatternPasswordExceptionResDto {
   @ApiProperty({ description: 'This is real possible status', example: 400 })
   status: number;
 
@@ -24,7 +23,7 @@ export class PatternPasswordExceptionResDto implements RegisterUserResponse {
   message: string;
 }
 
-export class NoSentEmailExceptionResDto implements RegisterUserResponse {
+export class NoSentEmailExceptionResDto {
   @ApiProperty({ description: 'This is real possible status', example: 400 })
   status: number;
 
@@ -35,7 +34,7 @@ export class NoSentEmailExceptionResDto implements RegisterUserResponse {
   message: string;
 }
 
-export class UserExistExceptionResDto implements RegisterUserResponse {
+export class UserExistExceptionResDto {
   @ApiProperty({ description: 'This is real possible status', example: 400 })
   status: number;
 
