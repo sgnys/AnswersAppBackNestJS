@@ -6,7 +6,7 @@ import {
 import { UserEntity } from './user.entity';
 import { UserRegisterReqDto } from './dto/user-register.req.dto';
 import { sign, verify } from 'jsonwebtoken';
-import { ActivateUserResponse, RegisterUserResponse } from 'types';
+import { UserAccountActivationRes, RegisterUserResponse } from 'types';
 import { REGEX } from '../utils/constants';
 import { hashPwd } from '../utils/hash-pwd';
 import { sanitizeUser } from '../utils/sanitize-user';
@@ -81,7 +81,7 @@ export class UserService {
     };
   }
 
-  async activateAccount(registerToken): Promise<ActivateUserResponse> {
+  async activateAccount(registerToken): Promise<UserAccountActivationRes> {
     const user = new UserEntity();
     console.log(registerToken);
 
@@ -102,7 +102,7 @@ export class UserService {
         },
       );
     } else {
-      throw new BadRequestException('Something went wrong');
+      throw new BadRequestException('The token has not been sent');
     }
 
     console.log('User', user);

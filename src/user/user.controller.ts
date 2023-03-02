@@ -1,10 +1,10 @@
-import { Body, Controller, Post, Put } from '@nestjs/common';
+import { Body, Controller, Post, Put, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserRegisterReqDto } from './dto/user-register.req.dto';
 import {
-  ActivateUserResponse,
+  UserAccountActivationRes,
   RegisterUserResponse,
-  UserRegister,
+  UserRegisterReq,
 } from 'types';
 import { ResetPasswordRequestDto } from './dto/reset-password.req.dto';
 import {
@@ -16,28 +16,50 @@ import {
 import {
   ApiBadRequestResponse,
   ApiBody,
+  ApiCreatedResponse,
   ApiExtraModels,
   ApiInternalServerErrorResponse,
+  ApiQuery,
   ApiResponse,
   ApiTags,
   refs,
 } from '@nestjs/swagger';
+import { UserAccountActivationResDto } from './dto/user-account-activation.res.dto';
+import {
+  ActivatingAccountExceptionResDto,
+  IncorrectOrExpiredLinkExceptionResDto,
+  NoSentRegisterTokenExceptionResDto,
+  UserAlreadyExistExceptionResDto,
+} from './dto/swagger-exceptions/account-activation-exception.res.dto';
 
 @ApiTags('User')
-@ApiInternalServerErrorResponse({ description: 'Please try later.' })
+@ApiInternalServerErrorResponse({
+  description: 'Internal server error',
+  schema: { example: { status: 500, message: 'Please try later.' } },
+})
 @ApiExtraModels(
   PatternPasswordExceptionResDto,
   ConfirmPasswordExceptionResDto,
   UserExistExceptionResDto,
   NoSentEmailExceptionResDto,
+  IncorrectOrExpiredLinkExceptionResDto,
+  NoSentRegisterTokenExceptionResDto,
+  UserAlreadyExistExceptionResDto,
+  ActivatingAccountExceptionResDto,
 )
 @Controller('api/user')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @ApiResponse({
-    description: 'Email has been sent, kindly activate your account',
+    description: 'Ok Response',
     status: 201,
+    schema: {
+      example: {
+        status: 201,
+        message: 'Email has been sent, kindly activate your account',
+      },
+    },
   })
   @ApiBadRequestResponse({
     description: 'Schemas of exceptions',
@@ -54,15 +76,35 @@ export class UserController {
   @ApiBody({ type: UserRegisterReqDto })
   register(
     @Body()
-    userRegister: UserRegister,
+    userRegister: UserRegisterReq,
   ): Promise<RegisterUserResponse> {
     return this.userService.register(userRegister);
   }
 
+  @ApiCreatedResponse({
+    description: 'Returns User data after logged in',
+    type: UserAccountActivationResDto,
+  })
+  @ApiQuery({
+    name: 'registerToken',
+    description: 'User registration token valid for 20 minutes ',
+  })
+  @ApiBadRequestResponse({
+    description: 'Schemas of exceptions',
+    schema: {
+      anyOf: refs(
+        IncorrectOrExpiredLinkExceptionResDto,
+        NoSentRegisterTokenExceptionResDto,
+        UserAlreadyExistExceptionResDto,
+        ActivatingAccountExceptionResDto,
+      ),
+    },
+  })
   @Post('/email-activate')
   activateAccount(
-    @Body('registerToken') registerToken: string,
-  ): Promise<ActivateUserResponse> {
+    @Query('registerToken') registerToken: string,
+  ): Promise<UserAccountActivationRes> {
+    console.log('token', registerToken);
     return this.userService.activateAccount(registerToken);
   }
 
