@@ -34,7 +34,8 @@ async function bootstrap() {
         type: 'apiKey',
         name: 'api_key',
         in: 'cookie',
-        description: 'Enter JWT Token',
+        description:
+          'Swagger UI does not support cookie authenticated. After correct login, copy the JWT token from BE, to use it for authorization.',
       },
       'api_key',
     )
