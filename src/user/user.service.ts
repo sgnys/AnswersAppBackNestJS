@@ -148,7 +148,7 @@ export class UserService {
     console.log(user.id);
 
     if (!user) {
-      throw new BadRequestException('User with this email does not exists.');
+      throw new BadRequestException('User with this email does not exist.');
     }
 
     const token = sign({ id: user.id }, process.env.RESET_PASSWORD_KEY, {

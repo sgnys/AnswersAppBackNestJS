@@ -19,6 +19,7 @@ import {
   ApiCreatedResponse,
   ApiExtraModels,
   ApiInternalServerErrorResponse,
+  ApiOkResponse,
   ApiQuery,
   ApiResponse,
   ApiTags,
@@ -31,6 +32,10 @@ import {
   NoSentRegisterTokenExceptionResDto,
   UserAlreadyExistExceptionResDto,
 } from './dto/swagger-exceptions/account-activation-exception.res.dto';
+import {
+  ResetPasswordExceptionResDto,
+  UserNotExistExceptionResDto,
+} from './dto/swagger-exceptions/forgot-password-exception.res.dto';
 
 @ApiTags('User')
 @ApiInternalServerErrorResponse({
@@ -46,6 +51,8 @@ import {
   NoSentRegisterTokenExceptionResDto,
   UserAlreadyExistExceptionResDto,
   ActivatingAccountExceptionResDto,
+  UserNotExistExceptionResDto,
+  ResetPasswordExceptionResDto,
 )
 @Controller('api/user')
 export class UserController {
@@ -108,7 +115,30 @@ export class UserController {
     return this.userService.activateAccount(registerToken);
   }
 
+  @ApiResponse({
+    description: 'Ok Response',
+    status: 200,
+    schema: {
+      example: {
+        status: 200,
+        message: 'Email has been sent, kindly activate your account',
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: 'Schemas of exceptions',
+    schema: {
+      anyOf: refs(UserNotExistExceptionResDto, ResetPasswordExceptionResDto),
+    },
+  })
   @Put('/forgot-password')
+  @ApiBody({
+    schema: {
+      example: {
+        email: 'user_email@example.com',
+      },
+    },
+  })
   forgotPassword(@Body('email') email: string): Promise<RegisterUserResponse> {
     return this.userService.forgotPassword(email);
   }
