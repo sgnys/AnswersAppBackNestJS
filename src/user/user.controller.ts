@@ -5,6 +5,7 @@ import {
   UserAccountActivationRes,
   RegisterUserResponse,
   UserRegisterReq,
+  ResetPasswordReq,
 } from 'types';
 import { ResetPasswordRequestDto } from './dto/reset-password.req.dto';
 import {
@@ -19,10 +20,10 @@ import {
   ApiCreatedResponse,
   ApiExtraModels,
   ApiInternalServerErrorResponse,
-  ApiOkResponse,
   ApiQuery,
   ApiResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
   refs,
 } from '@nestjs/swagger';
 import { UserAccountActivationResDto } from './dto/user-account-activation.res.dto';
@@ -32,10 +33,12 @@ import {
   NoSentRegisterTokenExceptionResDto,
   UserAlreadyExistExceptionResDto,
 } from './dto/swagger-exceptions/account-activation-exception.res.dto';
+import { UserNotExistExceptionResDto } from './dto/swagger-exceptions/forgot-password-exception.res.dto';
 import {
   ResetPasswordExceptionResDto,
-  UserNotExistExceptionResDto,
-} from './dto/swagger-exceptions/forgot-password-exception.res.dto';
+  ResetPasswordLinkExceptionResDto,
+  UserTokenNotExistExceptionResDto,
+} from './dto/swagger-exceptions/reset-password-exception.res.dto';
 
 @ApiTags('User')
 @ApiInternalServerErrorResponse({
@@ -52,7 +55,9 @@ import {
   UserAlreadyExistExceptionResDto,
   ActivatingAccountExceptionResDto,
   UserNotExistExceptionResDto,
+  UserTokenNotExistExceptionResDto,
   ResetPasswordExceptionResDto,
+  ResetPasswordLinkExceptionResDto,
 )
 @Controller('api/user')
 export class UserController {
@@ -121,14 +126,17 @@ export class UserController {
     schema: {
       example: {
         status: 200,
-        message: 'Email has been sent, kindly activate your account',
+        message: 'Email has been sent, kindly follow the instructions',
       },
     },
   })
   @ApiBadRequestResponse({
     description: 'Schemas of exceptions',
     schema: {
-      anyOf: refs(UserNotExistExceptionResDto, ResetPasswordExceptionResDto),
+      anyOf: refs(
+        UserNotExistExceptionResDto,
+        ResetPasswordLinkExceptionResDto,
+      ),
     },
   })
   @Put('/forgot-password')
@@ -143,9 +151,38 @@ export class UserController {
     return this.userService.forgotPassword(email);
   }
 
+  @ApiResponse({
+    description: 'Ok Response',
+    status: 200,
+    schema: {
+      example: {
+        status: 200,
+        message: 'Your password has been changed.',
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: 'Schemas of exceptions',
+    schema: {
+      anyOf: refs(
+        PatternPasswordExceptionResDto,
+        ConfirmPasswordExceptionResDto,
+        IncorrectOrExpiredLinkExceptionResDto,
+        NoSentRegisterTokenExceptionResDto,
+        UserTokenNotExistExceptionResDto,
+      ),
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Schemas of exceptions',
+    schema: {
+      anyOf: refs(ResetPasswordExceptionResDto),
+    },
+  })
   @Put('/reset-password')
+  @ApiBody({ type: ResetPasswordRequestDto })
   resetPassword(
-    @Body() resetPass: ResetPasswordRequestDto,
+    @Body() resetPass: ResetPasswordReq,
   ): Promise<RegisterUserResponse> {
     return this.userService.resetPassword(resetPass);
   }

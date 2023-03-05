@@ -198,14 +198,14 @@ export class UserService {
         function (err, decodedToken) {
           if (err) {
             console.log('Error occurred', err);
-            throw new BadRequestException('Incorrect or Expired token');
+            throw new BadRequestException('Incorrect or Expired link');
           }
           console.log(decodedToken.id);
           userId = decodedToken.id;
         },
       );
     } else {
-      throw new UnauthorizedException('Authentication error!');
+      throw new BadRequestException('The token has not been sent');
     }
 
     const user = await this.getUserById(userId);
