@@ -23,7 +23,23 @@ import { Roles } from 'src/decorators/roles.decorator';
 import { RolesGuard } from '../guards/roles.guard';
 import { UserObj } from '../decorators/user-object.decorator';
 import { UserEntity } from '../user/user.entity';
+import {
+  ApiForbiddenResponse,
+  ApiInternalServerErrorResponse,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Answer')
+@ApiInternalServerErrorResponse({
+  description: 'Internal server error',
+  schema: { example: { status: 500, message: 'Please try later.' } },
+})
+@ApiSecurity('api_key')
+@ApiForbiddenResponse({
+  description: 'Forbidden',
+  schema: { example: { status: 401, message: 'Forbidden resource' } },
+})
 @Controller('api/answer')
 export class AnswerController {
   constructor(private answerService: AnswerService) {}

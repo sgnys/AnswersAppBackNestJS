@@ -34,8 +34,8 @@ import { AuthLoginResDto } from './dto/auth-login-res.dto';
   description: 'Internal server error',
   schema: { example: { status: 500, message: 'Please try later.' } },
 })
-@Controller('api/auth')
 @ApiTags('Auth')
+@Controller('api/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
