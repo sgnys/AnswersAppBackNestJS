@@ -13,6 +13,7 @@ import { AnswerCreateDto } from './dto/answer-create.dto';
 import { AnswerEntity } from './answer.entity';
 import { AnswerUpdateDto } from './dto/answer-update.dto';
 import {
+  AnswerRes,
   AnswerIds,
   CategoryAnswer,
   CategoryCreateAnswer,
@@ -26,6 +27,7 @@ import { UserEntity } from '../user/user.entity';
 import {
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
+  ApiOkResponse,
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
@@ -44,10 +46,14 @@ import {
 export class AnswerController {
   constructor(private answerService: AnswerService) {}
 
+  @ApiOkResponse({
+    description: 'Lists of all Answers only for the Admin role',
+    type: [AnswerEntity],
+  })
   @Get('/all')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoles.ADMIN)
-  getAll(): Promise<AnswerEntity[]> {
+  getAll(): Promise<AnswerRes[]> {
     return this.answerService.getAll();
   }
 
