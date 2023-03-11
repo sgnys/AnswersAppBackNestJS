@@ -4,8 +4,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class AuthLoginResDto {
   @ApiProperty({
-    description: 'User id',
-    example: '100',
+    description: 'User uuid',
+    example: 'c25d3d10-fcea-4103-9539-cf2258d4cbba',
   })
   @IsNotEmpty()
   id: string;
