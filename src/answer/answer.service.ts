@@ -3,7 +3,12 @@ import { DataSource } from 'typeorm';
 import { AnswerEntity } from './answer.entity';
 import { AnswerCreateDto } from './dto/answer-create.dto';
 import { AnswerUpdateDto } from './dto/answer-update.dto';
-import { AnswerIds, CategoryAnswer, CategoryCreateAnswer } from 'types';
+import {
+  AnswerRes,
+  AnswerIds,
+  CategoryAnswer,
+  CategoryCreateAnswer,
+} from 'types';
 import { AnswerTemplateService } from '../answer-template/answer-template.service';
 import { UserEntity } from '../user/user.entity';
 import { UserService } from '../user/user.service';
@@ -16,7 +21,7 @@ export class AnswerService {
     private userService: UserService,
   ) {}
 
-  async getAll(): Promise<AnswerEntity[]> {
+  async getAll(): Promise<AnswerRes[]> {
     const selected = ['answerEntity', 'user.id', 'user.name', 'user.email'];
 
     const answers = await this.dataSource
