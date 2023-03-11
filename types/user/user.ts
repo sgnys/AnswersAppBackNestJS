@@ -23,3 +23,9 @@ export type RegisterUserResponse = {
   status: number;
   message: string;
 };
+
+export interface AnswerUserRes {
+  id: string;
+  name: string;
+  email: string;
+}

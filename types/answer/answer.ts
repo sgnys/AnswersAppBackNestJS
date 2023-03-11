@@ -1,4 +1,6 @@
 import { AnswerEntity } from '../../src/answer/answer.entity';
+import { AnswerTemplateRes, Template } from '../template';
+import { AnswerUserRes } from '../user';
 
 export enum CategoryCreateAnswer {
   IT = 'it',
@@ -22,4 +24,14 @@ export type CreateAnswerResponse = AnswerEntity;
 
 export interface AnswerIds {
   ids: string[];
+}
+
+export interface AnswerRes {
+  id: string;
+  text: string;
+  category: CategoryCreateAnswer;
+  copyBtnCount: number;
+  template: Template;
+  createdAt: Date;
+  updatedAt: Date;
 }
