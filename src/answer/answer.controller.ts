@@ -31,6 +31,7 @@ import {
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
+import { AnswerResDto } from './dto/swagger/answer.res.dto';
 
 @ApiTags('Answer')
 @ApiInternalServerErrorResponse({
@@ -57,10 +58,14 @@ export class AnswerController {
     return this.answerService.getAll();
   }
 
+  @ApiOkResponse({
+    description: 'List of all Answers only for User',
+    type: [AnswerResDto],
+  })
   @Get('/')
   @UseGuards(JwtAuthGuard)
   @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
-  getUserAnswers(@UserObj() user: UserEntity): Promise<AnswerEntity[]> {
+  getUserAnswers(@UserObj() user: UserEntity): Promise<AnswerRes[]> {
     return this.answerService.getAnswers(user);
   }
 

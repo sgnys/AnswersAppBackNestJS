@@ -36,7 +36,7 @@ export class AnswerService {
     return answers;
   }
 
-  async getAnswers(user: UserEntity): Promise<AnswerEntity[]> {
+  async getAnswers(user: UserEntity): Promise<AnswerRes[]> {
     console.log(user);
     const { id } = user;
 

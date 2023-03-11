@@ -11,7 +11,7 @@ import { AnswerRes, CategoryCreateAnswer, Template } from 'types';
 import { AnswerTemplateEntity } from '../answer-template/answer-template.entity';
 import { UserEntity } from '../user/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { AnswerUserResDto } from './dto/answer-user.res.dto';
+import { AnswerUserResDto } from './dto/swagger/answer-user.res.dto';
 
 @Entity()
 export class AnswerEntity extends BaseEntity implements AnswerRes {
