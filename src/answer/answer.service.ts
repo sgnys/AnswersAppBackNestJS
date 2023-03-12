@@ -1,17 +1,18 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { AnswerEntity } from './answer.entity';
-import { AnswerCreateDto } from './dto/answer-create.dto';
 import { AnswerUpdateDto } from './dto/answer-update.dto';
 import {
-  AnswerRes,
   AnswerIds,
+  AnswerRes,
   CategoryAnswer,
   CategoryCreateAnswer,
+  CreateAnswerRes,
 } from 'types';
 import { AnswerTemplateService } from '../answer-template/answer-template.service';
 import { UserEntity } from '../user/user.entity';
 import { UserService } from '../user/user.service';
+import { AnswerCreateReqDto } from './dto/answer-create.req.dto';
 
 @Injectable()
 export class AnswerService {
@@ -57,8 +58,8 @@ export class AnswerService {
 
   async create(
     user: UserEntity,
-    answer: AnswerCreateDto,
-  ): Promise<AnswerEntity> {
+    answer: AnswerCreateReqDto,
+  ): Promise<CreateAnswerRes> {
     const newAnswer = await new AnswerEntity();
 
     const { id } = user;
@@ -71,7 +72,7 @@ export class AnswerService {
 
     newAnswer.text = answer.text;
     newAnswer.category = answer.category;
-    newAnswer.template = answer.template;
+    newAnswer.template = template?.name;
 
     await newAnswer.save();
 
