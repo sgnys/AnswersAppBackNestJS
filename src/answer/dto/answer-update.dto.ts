@@ -1,3 +1,3 @@
-import { AnswerCreateDto } from './answer-create.dto';
+import { AnswerCreateReqDto } from './answer-create.req.dto';
 
-export class AnswerUpdateDto extends AnswerCreateDto {}
+export class AnswerUpdateDto extends AnswerCreateReqDto {}
