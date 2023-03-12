@@ -26,11 +26,14 @@ import { RolesGuard } from '../guards/roles.guard';
 import { UserObj } from '../decorators/user-object.decorator';
 import { UserEntity } from '../user/user.entity';
 import {
+  ApiBadRequestResponse,
   ApiBody,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
+  ApiOperation,
+  ApiParam,
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
@@ -73,13 +76,32 @@ export class AnswerController {
     return this.answerService.getAnswers(user);
   }
 
+  //TODO add @ApiOperation to all path
+  @ApiOperation({ summary: 'Get single answer' })
+  @ApiParam({
+    description: 'Answer id (uuid)',
+    name: 'id',
+  })
+  @ApiOkResponse({
+    description: 'Return single answer',
+    type: AnswerResDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Answer does not exist',
+    schema: {
+      example: {
+        status: 400,
+        message: `The answer with this id: id does not exist`,
+      },
+    },
+  })
   @Get('/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
   getOne(
     @UserObj() user: UserEntity,
     @Param('id') id: string,
-  ): Promise<AnswerEntity> {
+  ): Promise<AnswerRes> {
     return this.answerService.getAnswerById(user, id);
   }
 
