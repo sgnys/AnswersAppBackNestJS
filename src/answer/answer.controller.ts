@@ -54,6 +54,7 @@ import { AnswerCreateReqDto } from './dto/answer-create.req.dto';
 export class AnswerController {
   constructor(private answerService: AnswerService) {}
 
+  @ApiOperation({ summary: 'Get list of all Users answers - [Admin]' })
   @ApiOkResponse({
     description: 'Lists of all Answers only for the Admin role',
     type: [AnswerEntity],
@@ -65,6 +66,9 @@ export class AnswerController {
     return this.answerService.getAll();
   }
 
+  @ApiOperation({
+    summary: 'Get list of answers for single User - [Admin, User]',
+  })
   @ApiOkResponse({
     description: 'List of all Answers only for User',
     type: [AnswerResDto],
@@ -76,8 +80,7 @@ export class AnswerController {
     return this.answerService.getAnswers(user);
   }
 
-  //TODO add @ApiOperation to all path
-  @ApiOperation({ summary: 'Get single answer' })
+  @ApiOperation({ summary: 'Get answer for a single User - [Admin, User]' })
   @ApiParam({
     description: 'Answer id (uuid)',
     name: 'id',
@@ -115,6 +118,7 @@ export class AnswerController {
     return this.answerService.getAllSortedByCategory(user, category);
   }
 
+  @ApiOperation({ summary: 'Create new answer - [Admin, User]' })
   @ApiCreatedResponse({
     description: 'Returns created answer',
     type: AnswerResDto,
