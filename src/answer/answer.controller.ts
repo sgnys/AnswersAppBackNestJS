@@ -9,7 +9,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AnswerService } from './answer.service';
-import { AnswerCreateDto } from './dto/answer-create.dto';
 import { AnswerEntity } from './answer.entity';
 import { AnswerUpdateDto } from './dto/answer-update.dto';
 import {
@@ -18,6 +17,8 @@ import {
   CategoryAnswer,
   CategoryCreateAnswer,
   UserRoles,
+  CreateAnswerRes,
+  CreateAnswerReq,
 } from 'types';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -25,6 +26,8 @@ import { RolesGuard } from '../guards/roles.guard';
 import { UserObj } from '../decorators/user-object.decorator';
 import { UserEntity } from '../user/user.entity';
 import {
+  ApiBody,
+  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
@@ -32,6 +35,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AnswerResDto } from './dto/swagger/answer.res.dto';
+import { AnswerCreateReqDto } from './dto/answer-create.req.dto';
 
 @ApiTags('Answer')
 @ApiInternalServerErrorResponse({
@@ -89,13 +93,20 @@ export class AnswerController {
     return this.answerService.getAllSortedByCategory(user, category);
   }
 
+  @ApiCreatedResponse({
+    description: 'Returns created answer',
+    type: AnswerResDto,
+  })
   @Post('/')
+  @ApiBody({
+    type: AnswerCreateReqDto,
+  })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
   create(
     @UserObj() user: UserEntity,
-    @Body() body: AnswerCreateDto,
-  ): Promise<AnswerEntity> {
+    @Body() body: CreateAnswerReq,
+  ): Promise<CreateAnswerRes> {
     return this.answerService.create(user, body);
   }
 
