@@ -20,7 +20,13 @@ export enum CategoryAnswer {
   MOST_COPIED = 'most-copied',
 }
 
-export type CreateAnswerResponse = AnswerEntity;
+export type CreateAnswerRes = AnswerEntity;
+
+export interface CreateAnswerReq {
+  text: string;
+  category: CategoryCreateAnswer;
+  template: Template;
+}
 
 export interface AnswerIds {
   ids: string[];
