@@ -25,7 +25,7 @@ export type CreateAnswerRes = AnswerEntity;
 export interface CreateAnswerReq {
   text: string;
   category: CategoryCreateAnswer;
-  template: Template;
+  template: Template | null;
 }
 
 export interface AnswerIds {
