@@ -95,7 +95,7 @@ export class AnswerService {
     user: UserEntity,
     id: string,
     data: AnswerUpdateDto,
-  ): Promise<AnswerEntity> {
+  ): Promise<AnswerRes> {
     const answer = await this.getAnswerById(user, id);
     console.log(answer);
 

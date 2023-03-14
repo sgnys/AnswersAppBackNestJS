@@ -136,6 +136,27 @@ export class AnswerController {
     return this.answerService.create(user, body);
   }
 
+  //TODO zmienić typ body dla answer i user na DTO, typy zmienić na
+  // interfejsy aby implementowały DTO
+
+  @ApiOperation({ summary: 'Update answer - [Admin, User]' })
+  @ApiParam({
+    description: 'Answer id (uuid)',
+    name: 'id',
+  })
+  @ApiCreatedResponse({
+    description: 'Return updated answer',
+    type: AnswerResDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Answer does not exist',
+    schema: {
+      example: {
+        status: 400,
+        message: `The answer with this id: id does not exist`,
+      },
+    },
+  })
   @Put('/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
@@ -143,7 +164,7 @@ export class AnswerController {
     @UserObj() user: UserEntity,
     @Param('id') id: string,
     @Body() body: AnswerUpdateDto,
-  ): Promise<AnswerEntity> {
+  ): Promise<AnswerRes> {
     return this.answerService.update(user, id, body);
   }
 
