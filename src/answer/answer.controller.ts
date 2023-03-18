@@ -173,6 +173,21 @@ export class AnswerController {
     return this.answerService.update(user, id, body);
   }
 
+  @ApiOperation({
+    summary:
+      'Update copyBtnCount value - number of clicks on copy button - [Admin, User]',
+  })
+  @ApiParam({
+    description: 'Answer id (uuid)',
+    name: 'id',
+  })
+  @ApiOkResponse({
+    description: 'Success of update copyBtnCount value',
+    schema: {
+      type: 'integer',
+      example: 1,
+    },
+  })
   @Put('/count/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
