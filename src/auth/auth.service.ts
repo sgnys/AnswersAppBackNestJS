@@ -12,6 +12,7 @@ import { UserEntity } from '../user/user.entity';
 import { sanitizeUser } from '../utils/sanitize-user';
 import { stringToBoolean } from '../utils/string-to-boolean';
 import { UserLoginReg, UserLoginRes } from 'types';
+import { AuthLoginReqDto } from './dto/auth-login-req.dto';
 
 export interface JwtPayload {
   tokenId: string;
@@ -63,7 +64,7 @@ export class AuthService {
     return user;
   }
 
-  async login(loginDto: UserLoginReg, res: Response): Promise<UserLoginRes> {
+  async login(loginDto: AuthLoginReqDto, res: Response): Promise<UserLoginRes> {
     console.log(loginDto);
     try {
       const user = await UserEntity.findOne({

@@ -1,7 +1,8 @@
 import { IsEmail, IsNotEmpty, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { UserRegisterReq } from 'types';
 
-export class UserRegisterReqDto {
+export class UserRegisterReqDto implements UserRegisterReq {
   @ApiProperty({
     description: 'The name of the user',
     example: 'Pablo',

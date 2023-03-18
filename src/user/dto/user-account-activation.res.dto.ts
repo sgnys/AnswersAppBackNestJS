@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
-import { UserRoles } from 'types';
+import { UserAccountActivationRes, UserRoles } from 'types';
 
-export class UserAccountActivationResDto {
+export class UserAccountActivationResDto implements UserAccountActivationRes {
   @ApiProperty({
-    description: 'User id',
-    example: '100',
+    description: 'User uuid',
+    example: 'c25d3d10-fcea-4103-9539-cf2258d4cbba',
   })
   @IsNotEmpty()
   id: string;

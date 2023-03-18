@@ -1,7 +1,8 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { UserLoginReg } from 'types';
 
-export class AuthLoginReqDto {
+export class AuthLoginReqDto implements UserLoginReg {
   @ApiProperty({
     description: 'Email address of the user',
     example: 'user@example.com',

@@ -1,28 +1,39 @@
-import { AuthLoginReqDto } from '../../src/auth/dto/auth-login-req.dto';
-import { UserRegisterReqDto } from '../../src/user/dto/user-register.req.dto';
-import { AuthLoginResDto } from '../../src/auth/dto/auth-login-res.dto';
-import { UserAccountActivationResDto } from '../../src/user/dto/user-account-activation.res.dto';
-import { ResetPasswordRequestDto } from '../../src/user/dto/reset-password.req.dto';
-
 export enum UserRoles {
   ADMIN = 1,
   MEMBER,
 }
 
-export type UserLoginReg = AuthLoginReqDto;
+export type UserLoginRes = UserAccountActivationRes;
 
-export type UserLoginRes = AuthLoginResDto;
+export interface UserAccountActivationRes {
+  id: string;
+  role: UserRoles;
+  email: string;
+  name: string;
+}
 
-export type UserRegisterReq = UserRegisterReqDto;
+export interface UserLoginReg {
+  email: string;
+  password: string;
+}
 
-export type UserAccountActivationRes = UserAccountActivationResDto;
+export interface ResetPasswordReq {
+  resetToken: string;
+  newPass: string;
+  confirm: string;
+}
 
-export type ResetPasswordReq = ResetPasswordRequestDto;
+export interface UserRegisterReq {
+  name: string;
+  email: string;
+  password: string;
+  confirm: string;
+}
 
-export type RegisterUserResponse = {
+export interface RegisterUserResponse {
   status: number;
   message: string;
-};
+}
 
 export interface AnswerUserRes {
   id: string;

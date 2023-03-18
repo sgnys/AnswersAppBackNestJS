@@ -88,7 +88,7 @@ export class UserController {
   @ApiBody({ type: UserRegisterReqDto })
   register(
     @Body()
-    userRegister: UserRegisterReq,
+    userRegister: UserRegisterReqDto,
   ): Promise<RegisterUserResponse> {
     return this.userService.register(userRegister);
   }
@@ -182,7 +182,7 @@ export class UserController {
   @Put('/reset-password')
   @ApiBody({ type: ResetPasswordRequestDto })
   resetPassword(
-    @Body() resetPass: ResetPasswordReq,
+    @Body() resetPass: ResetPasswordRequestDto,
   ): Promise<RegisterUserResponse> {
     return this.userService.resetPassword(resetPass);
   }

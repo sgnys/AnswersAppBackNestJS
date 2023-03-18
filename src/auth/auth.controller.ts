@@ -58,7 +58,7 @@ export class AuthController {
   @Post('login')
   @ApiBody({ type: AuthLoginReqDto })
   login(
-    @Body() loginDto: UserLoginReg,
+    @Body() loginDto: AuthLoginReqDto,
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<UserLoginRes> {

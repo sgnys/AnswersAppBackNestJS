@@ -18,7 +18,6 @@ import {
   CategoryCreateAnswer,
   UserRoles,
   CreateAnswerRes,
-  CreateAnswerReq,
 } from 'types';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -131,13 +130,10 @@ export class AnswerController {
   @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
   create(
     @UserObj() user: UserEntity,
-    @Body() body: CreateAnswerReq,
+    @Body() body: AnswerCreateReqDto,
   ): Promise<CreateAnswerRes> {
     return this.answerService.create(user, body);
   }
-
-  //TODO zmienić typ body dla answer i user na DTO, typy zmienić na
-  // interfejsy aby implementowały DTO
 
   @ApiOperation({ summary: 'Update answer - [Admin, User]' })
   @ApiParam({

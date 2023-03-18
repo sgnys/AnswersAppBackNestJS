@@ -1,6 +1,5 @@
 import { AnswerEntity } from '../../src/answer/answer.entity';
-import { AnswerTemplateRes, Template } from '../template';
-import { AnswerUserRes } from '../user';
+import { Template } from '../template';
 
 export enum CategoryCreateAnswer {
   IT = 'it',
