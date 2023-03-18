@@ -179,7 +179,7 @@ export class AnswerService {
   async getAllSortedByCategory(
     user: UserEntity,
     category: CategoryCreateAnswer | CategoryAnswer,
-  ): Promise<AnswerEntity[]> {
+  ): Promise<AnswerRes[]> {
     console.log(category);
 
     const { id } = user;

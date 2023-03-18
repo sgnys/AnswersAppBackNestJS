@@ -103,13 +103,31 @@ export class AnswerController {
     return this.answerService.getAnswerById(user, id);
   }
 
+  @ApiOperation({ summary: 'List of Answers by category - [Admin, User]' })
+  @ApiParam({
+    description: 'The name of category',
+    name: 'category',
+  })
+  @ApiOkResponse({
+    description: 'List of Answers by category',
+    type: [AnswerResDto],
+  })
+  @ApiBadRequestResponse({
+    description: 'Error when no category was marked',
+    schema: {
+      example: {
+        status: 400,
+        message: `No answer category was marked`,
+      },
+    },
+  })
   @Get('/sort/:category')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
   getSorted(
     @UserObj() user: UserEntity,
     @Param('category') category: CategoryCreateAnswer | CategoryAnswer,
-  ): Promise<AnswerEntity[]> {
+  ): Promise<AnswerRes[]> {
     return this.answerService.getAllSortedByCategory(user, category);
   }
 
