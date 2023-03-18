@@ -38,6 +38,7 @@ import {
 } from '@nestjs/swagger';
 import { AnswerResDto } from './dto/swagger/answer.res.dto';
 import { AnswerCreateReqDto } from './dto/answer-create.req.dto';
+import { AnswerNotExistExceptionResDto } from './dto/swagger/answer-not-exist-exception.res.dto';
 
 @ApiTags('Answer')
 @ApiInternalServerErrorResponse({
@@ -90,12 +91,7 @@ export class AnswerController {
   })
   @ApiBadRequestResponse({
     description: 'Answer does not exist',
-    schema: {
-      example: {
-        status: 400,
-        message: `The answer with this id: id does not exist`,
-      },
-    },
+    type: AnswerNotExistExceptionResDto,
   })
   @Get('/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -146,12 +142,7 @@ export class AnswerController {
   })
   @ApiBadRequestResponse({
     description: 'Answer does not exist',
-    schema: {
-      example: {
-        status: 400,
-        message: `The answer with this id: id does not exist`,
-      },
-    },
+    type: AnswerNotExistExceptionResDto,
   })
   @Put('/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -179,6 +170,24 @@ export class AnswerController {
     return this.answerService.deleteSelected(user, body);
   }
 
+  @ApiOperation({ summary: 'Delete answer - [Admin, User]' })
+  @ApiParam({
+    description: 'Answer id (uuid)',
+    name: 'id',
+  })
+  @ApiOkResponse({
+    description: 'Success of deleting answer',
+    schema: {
+      example: {
+        status: 200,
+        message: `The answer has been removed from the list`,
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: 'Answer does not exist',
+    type: AnswerNotExistExceptionResDto,
+  })
   @Delete('/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
