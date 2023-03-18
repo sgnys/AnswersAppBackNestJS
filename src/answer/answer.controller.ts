@@ -13,7 +13,6 @@ import { AnswerEntity } from './answer.entity';
 import { AnswerUpdateDto } from './dto/answer-update.dto';
 import {
   AnswerRes,
-  AnswerIds,
   CategoryAnswer,
   CategoryCreateAnswer,
   UserRoles,
@@ -39,6 +38,7 @@ import {
 import { AnswerResDto } from './dto/swagger/answer.res.dto';
 import { AnswerCreateReqDto } from './dto/answer-create.req.dto';
 import { AnswerNotExistExceptionResDto } from './dto/swagger/answer-not-exist-exception.res.dto';
+import { AnswerIdsReqDto } from './dto/answer-ids.req.dto';
 
 @ApiTags('Answer')
 @ApiInternalServerErrorResponse({
@@ -195,10 +195,23 @@ export class AnswerController {
     return this.answerService.updateCopyCount(id);
   }
 
+  @ApiOperation({ summary: 'Delete selected answers - [Admin, User]' })
+  @ApiOkResponse({
+    description: 'Success of deleting selected answers',
+    schema: {
+      example: {
+        status: 200,
+        message: `Selected answers has been removed from the list`,
+      },
+    },
+  })
   @Delete('/selected')
+  @ApiBody({
+    type: AnswerIdsReqDto,
+  })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
-  deleteMany(@UserObj() user: UserEntity, @Body() body: AnswerIds) {
+  deleteMany(@UserObj() user: UserEntity, @Body() body: AnswerIdsReqDto) {
     console.log(body);
     return this.answerService.deleteSelected(user, body);
   }

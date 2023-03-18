@@ -3,7 +3,6 @@ import { DataSource } from 'typeorm';
 import { AnswerEntity } from './answer.entity';
 import { AnswerUpdateDto } from './dto/answer-update.dto';
 import {
-  AnswerIds,
   AnswerRes,
   CategoryAnswer,
   CategoryCreateAnswer,
@@ -13,6 +12,7 @@ import { AnswerTemplateService } from '../answer-template/answer-template.servic
 import { UserEntity } from '../user/user.entity';
 import { UserService } from '../user/user.service';
 import { AnswerCreateReqDto } from './dto/answer-create.req.dto';
+import { AnswerIdsReqDto } from './dto/answer-ids.req.dto';
 
 @Injectable()
 export class AnswerService {
@@ -249,7 +249,7 @@ export class AnswerService {
     };
   }
 
-  async deleteSelected(user: UserEntity, body: AnswerIds) {
+  async deleteSelected(user: UserEntity, body: AnswerIdsReqDto) {
     console.log(body.ids);
     const { id } = user;
     const { ids } = body;
@@ -269,7 +269,7 @@ export class AnswerService {
     console.log(result);
 
     return {
-      codeStatus: 200,
+      status: 200,
       message: `Selected answers has been removed from the list`,
     };
   }
