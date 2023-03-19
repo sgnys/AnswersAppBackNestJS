@@ -1,19 +1,11 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { LocalAuthGuard } from 'src/guards/local-auth.guard';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { AuthLoginReqDto } from 'src/auth/dto/auth-login-req.dto';
-import { UserLoginReg, UserLoginRes, UserRoles } from 'types';
+import { UserLoginRes, UserRoles } from 'types';
 import { Roles } from '../decorators/roles.decorator';
 import { UserObj } from 'src/decorators/user-object.decorator';
 import { UserEntity } from '../user/user.entity';
@@ -24,6 +16,7 @@ import {
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiSecurity,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -39,6 +32,7 @@ import { AuthLoginResDto } from './dto/auth-login-res.dto';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiOperation({ summary: 'User log-in - [Admin, User]' })
   @ApiCreatedResponse({
     description:
       'Returns User data in Response. Swagger UI does not support cookie authenticated. After correct login, copy the JWT token from BE, to use it for authorization. ',
@@ -67,6 +61,7 @@ export class AuthController {
     return this.authService.login(loginDto, res);
   }
 
+  @ApiOperation({ summary: 'User log-out - [Admin, User]' })
   @ApiSecurity('api_key')
   @ApiOkResponse({
     description: 'Successful logout',
@@ -89,17 +84,21 @@ export class AuthController {
   }
 
   //TODO delete this method after tests
+  /**
   @UseGuards(JwtAuthGuard)
   @Get('testPathForJwtAuthGuard')
   async testPathForJwtAuthGuard(@Req() req: Request): Promise<any> {
     return req.user;
   }
+   */
 
   //TODO delete this method after tests
+  /**
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
   @Get('testPathForRolesGuard')
   async testPathForRolesGuard(@Req() req: Request): Promise<any> {
     return req.user;
   }
+   */
 }

@@ -15,8 +15,10 @@ export class AppController {
   }
 
   //TODO Delete after tests
+  /**
   @Get('/test')
   Test() {
     return this.answerTemplateService.createDefaultTemplatesAndAnswersForRegisterUser();
   }
+   */
 }

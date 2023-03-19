@@ -20,6 +20,7 @@ import {
   ApiCreatedResponse,
   ApiExtraModels,
   ApiInternalServerErrorResponse,
+  ApiOperation,
   ApiQuery,
   ApiResponse,
   ApiTags,
@@ -63,6 +64,7 @@ import {
 export class UserController {
   constructor(private userService: UserService) {}
 
+  @ApiOperation({ summary: 'User registration' })
   @ApiResponse({
     description: 'Ok Response',
     status: 201,
@@ -93,6 +95,9 @@ export class UserController {
     return this.userService.register(userRegister);
   }
 
+  @ApiOperation({
+    summary: 'User account activation using the registration link',
+  })
   @ApiCreatedResponse({
     description: 'Returns User data after logged in',
     type: UserAccountActivationResDto,
@@ -120,6 +125,7 @@ export class UserController {
     return this.userService.activateAccount(registerToken);
   }
 
+  @ApiOperation({ summary: 'Password recovery by email address' })
   @ApiResponse({
     description: 'Ok Response',
     status: 200,
@@ -151,6 +157,7 @@ export class UserController {
     return this.userService.forgotPassword(email);
   }
 
+  @ApiOperation({ summary: 'Setting a new password' })
   @ApiResponse({
     description: 'Ok Response',
     status: 200,
