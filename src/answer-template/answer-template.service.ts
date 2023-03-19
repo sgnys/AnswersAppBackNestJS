@@ -3,7 +3,7 @@ import { AnswerTemplateEntity } from './answer-template.entity';
 import { AnswerTemplateUpdateDto } from './dto/answer-template-update.dto';
 import { DEFAULT_ANSWERS, DEFAULT_TEMPLATES } from '../utils/constants';
 import { AnswerEntity } from '../answer/answer.entity';
-import { Template } from 'types';
+import { AnswerTemplateRes, Template } from 'types';
 import { DataSource } from 'typeorm';
 import { UserEntity } from '../user/user.entity';
 
@@ -11,12 +11,12 @@ import { UserEntity } from '../user/user.entity';
 export class AnswerTemplateService {
   constructor(private dataSource: DataSource) {}
 
-  async getAll(): Promise<AnswerTemplateEntity[]> {
+  async getAll(): Promise<AnswerTemplateRes[]> {
     const selected = [
       'AnswerTemplateEntity',
       'user.id',
-      'user.name',
       'user.email',
+      'user.name',
     ];
 
     const templates = await this.dataSource
@@ -30,7 +30,7 @@ export class AnswerTemplateService {
     return templates;
   }
 
-  async getTemplates(user: UserEntity): Promise<AnswerTemplateEntity[]> {
+  async getTemplates(user: UserEntity): Promise<AnswerTemplateRes[]> {
     console.log(user);
     const { id } = user;
 
@@ -87,7 +87,7 @@ export class AnswerTemplateService {
     user: UserEntity,
     id: string,
     data: AnswerTemplateUpdateDto,
-  ): Promise<AnswerTemplateEntity> {
+  ): Promise<AnswerTemplateRes> {
     const template = await this.getTemplateById(user, id);
     console.log(template);
 

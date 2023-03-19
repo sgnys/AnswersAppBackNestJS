@@ -4,9 +4,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserEntity } from './user.entity';
-import { UserRegisterRequestDto } from './dto/user-register.req.dto';
+import { UserRegisterReqDto } from './dto/user-register.req.dto';
 import { sign, verify } from 'jsonwebtoken';
-import { ActivateUserResponse, RegisterUserResponse } from '../../types';
+import { UserAccountActivationRes, RegisterUserResponse } from 'types';
 import { REGEX } from '../utils/constants';
 import { hashPwd } from '../utils/hash-pwd';
 import { sanitizeUser } from '../utils/sanitize-user';
@@ -26,7 +26,7 @@ export class UserService {
     private mailService: MailService,
   ) {}
   async register(
-    userRegister: UserRegisterRequestDto,
+    userRegister: UserRegisterReqDto,
   ): Promise<RegisterUserResponse> {
     const { name, email, password, confirm } = userRegister;
 
@@ -51,7 +51,7 @@ export class UserService {
 
     if (password !== confirm) {
       throw new BadRequestException(
-        'password and confirm password must be equal',
+        'Password and confirm password must be equal',
       );
     }
 
@@ -76,12 +76,12 @@ export class UserService {
     }
 
     return {
-      statusCode: 200,
+      status: 201,
       message: 'Email has been sent, kindly activate your account',
     };
   }
 
-  async activateAccount(registerToken): Promise<ActivateUserResponse> {
+  async activateAccount(registerToken): Promise<UserAccountActivationRes> {
     const user = new UserEntity();
     console.log(registerToken);
 
@@ -102,7 +102,7 @@ export class UserService {
         },
       );
     } else {
-      throw new BadRequestException('Something went wrong');
+      throw new BadRequestException('The token has not been sent');
     }
 
     console.log('User', user);
@@ -148,7 +148,7 @@ export class UserService {
     console.log(user.id);
 
     if (!user) {
-      throw new BadRequestException('User with this email does not exists.');
+      throw new BadRequestException('User with this email does not exist.');
     }
 
     const token = sign({ id: user.id }, process.env.RESET_PASSWORD_KEY, {
@@ -162,7 +162,7 @@ export class UserService {
       await UserEntity.update({ email }, { resetLinkToken: token });
       await this.mailService.sendPasswordResetLink(email, token);
       return {
-        statusCode: 200,
+        status: 200,
         message: 'Email has been sent, kindly follow the instructions',
       };
     } catch (err) {
@@ -198,14 +198,14 @@ export class UserService {
         function (err, decodedToken) {
           if (err) {
             console.log('Error occurred', err);
-            throw new BadRequestException('Incorrect or Expired token');
+            throw new BadRequestException('Incorrect or Expired link');
           }
           console.log(decodedToken.id);
           userId = decodedToken.id;
         },
       );
     } else {
-      throw new UnauthorizedException('Authentication error!');
+      throw new BadRequestException('The token has not been sent');
     }
 
     const user = await this.getUserById(userId);
@@ -223,7 +223,7 @@ export class UserService {
       user.password = hashPwd(newPass);
       await user.save();
       return {
-        statusCode: 200,
+        status: 200,
         message: 'Your password has been changed.',
       };
     } catch (err) {

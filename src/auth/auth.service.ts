@@ -8,10 +8,11 @@ import { sign } from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
 import { UserService } from '../user/user.service';
 import { hashPwd } from '../utils/hash-pwd';
-import { AuthLoginDto } from './dto/auth-login.dto';
 import { UserEntity } from '../user/user.entity';
 import { sanitizeUser } from '../utils/sanitize-user';
 import { stringToBoolean } from '../utils/string-to-boolean';
+import { UserLoginReg, UserLoginRes } from 'types';
+import { AuthLoginReqDto } from './dto/auth-login-req.dto';
 
 export interface JwtPayload {
   tokenId: string;
@@ -55,7 +56,7 @@ export class AuthService {
     const user = await this.userService.getUserByEmail(email);
     console.log(user, 'in validateUserCreds');
 
-    if (!user) throw new BadRequestException();
+    if (!user) throw new BadRequestException('Invalid login data!');
 
     if (!(user.password === hashPwd(password))) {
       throw new UnauthorizedException();
@@ -63,7 +64,7 @@ export class AuthService {
     return user;
   }
 
-  async login(loginDto: AuthLoginDto, res: Response): Promise<any> {
+  async login(loginDto: AuthLoginReqDto, res: Response): Promise<UserLoginRes> {
     console.log(loginDto);
     try {
       const user = await UserEntity.findOne({
@@ -76,10 +77,11 @@ export class AuthService {
       if (!user) {
         throw new BadRequestException('Invalid login data!');
       }
-
+      // throw new Error('some error occurred');
       const token = this.createToken(await this.generateToken(user));
       console.log(this.oneDay);
-      return res
+      console.log(token);
+      res
         .cookie('jwt', token.accessToken, {
           secure: stringToBoolean(process.env.COOKIE_SECURE),
           domain: process.env.DOMAIN,
@@ -87,9 +89,10 @@ export class AuthService {
           maxAge: this.oneDay,
         })
         .json(sanitizeUser(user));
+      return sanitizeUser(user);
     } catch (e) {
       console.log('Failed to log in', e);
-      throw new UnauthorizedException('Failed to log in');
+      throw new UnauthorizedException('User cannot register. Try again!');
     }
   }
 
@@ -104,7 +107,7 @@ export class AuthService {
         domain: process.env.DOMAIN,
         httpOnly: true,
       });
-      return res.json({ statusCode: 400, message: 'Logout was successful' });
+      return res.json({ statusCode: 200, message: 'Logout was successful' });
     } catch (e) {
       console.log('Failed to log out');
       throw new BadRequestException('Failed to log out');

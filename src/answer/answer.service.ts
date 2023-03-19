@@ -1,12 +1,18 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { AnswerEntity } from './answer.entity';
-import { AnswerCreateDto } from './dto/answer-create.dto';
 import { AnswerUpdateDto } from './dto/answer-update.dto';
-import { AnswerIds, CategoryAnswer, CategoryCreateAnswer } from 'types';
+import {
+  AnswerRes,
+  CategoryAnswer,
+  CategoryCreateAnswer,
+  CreateAnswerRes,
+} from 'types';
 import { AnswerTemplateService } from '../answer-template/answer-template.service';
 import { UserEntity } from '../user/user.entity';
 import { UserService } from '../user/user.service';
+import { AnswerCreateReqDto } from './dto/answer-create.req.dto';
+import { AnswerIdsReqDto } from './dto/answer-ids.req.dto';
 
 @Injectable()
 export class AnswerService {
@@ -16,7 +22,7 @@ export class AnswerService {
     private userService: UserService,
   ) {}
 
-  async getAll(): Promise<AnswerEntity[]> {
+  async getAll(): Promise<AnswerRes[]> {
     const selected = ['answerEntity', 'user.id', 'user.name', 'user.email'];
 
     const answers = await this.dataSource
@@ -31,7 +37,7 @@ export class AnswerService {
     return answers;
   }
 
-  async getAnswers(user: UserEntity): Promise<AnswerEntity[]> {
+  async getAnswers(user: UserEntity): Promise<AnswerRes[]> {
     console.log(user);
     const { id } = user;
 
@@ -52,8 +58,8 @@ export class AnswerService {
 
   async create(
     user: UserEntity,
-    answer: AnswerCreateDto,
-  ): Promise<AnswerEntity> {
+    answer: AnswerCreateReqDto,
+  ): Promise<CreateAnswerRes> {
     const newAnswer = await new AnswerEntity();
 
     const { id } = user;
@@ -66,7 +72,7 @@ export class AnswerService {
 
     newAnswer.text = answer.text;
     newAnswer.category = answer.category;
-    newAnswer.template = answer.template;
+    newAnswer.template = template?.name;
 
     await newAnswer.save();
 
@@ -89,7 +95,7 @@ export class AnswerService {
     user: UserEntity,
     id: string,
     data: AnswerUpdateDto,
-  ): Promise<AnswerEntity> {
+  ): Promise<AnswerRes> {
     const answer = await this.getAnswerById(user, id);
     console.log(answer);
 
@@ -173,7 +179,7 @@ export class AnswerService {
   async getAllSortedByCategory(
     user: UserEntity,
     category: CategoryCreateAnswer | CategoryAnswer,
-  ): Promise<AnswerEntity[]> {
+  ): Promise<AnswerRes[]> {
     console.log(category);
 
     const { id } = user;
@@ -243,7 +249,7 @@ export class AnswerService {
     };
   }
 
-  async deleteSelected(user: UserEntity, body: AnswerIds) {
+  async deleteSelected(user: UserEntity, body: AnswerIdsReqDto) {
     console.log(body.ids);
     const { id } = user;
     const { ids } = body;
@@ -263,7 +269,7 @@ export class AnswerService {
     console.log(result);
 
     return {
-      codeStatus: 200,
+      status: 200,
       message: `Selected answers has been removed from the list`,
     };
   }
