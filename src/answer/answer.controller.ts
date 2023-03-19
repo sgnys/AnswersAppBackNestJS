@@ -163,6 +163,9 @@ export class AnswerController {
     type: AnswerNotExistExceptionResDto,
   })
   @Put('/:id')
+  @ApiBody({
+    type: AnswerUpdateDto,
+  })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRoles.ADMIN, UserRoles.MEMBER)
   update(

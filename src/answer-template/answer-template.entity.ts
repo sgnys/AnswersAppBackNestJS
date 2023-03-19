@@ -11,6 +11,8 @@ import { AnswerTemplateRes, Template } from 'types';
 import { AnswerEntity } from '../answer/answer.entity';
 import { UserEntity } from '../user/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { AnswerTemplateResDto } from './dto/swagger/answer-template.res.dto';
+import { AnswerTemplateUserResDto } from './dto/swagger/answer-template-user.res.dto';
 
 @Entity()
 export class AnswerTemplateEntity
@@ -63,6 +65,10 @@ export class AnswerTemplateEntity
   @OneToMany(() => AnswerEntity, (answer) => answer.answerTemplate)
   answers: AnswerEntity[];
 
+  @ApiProperty({
+    description: 'One of the user answer template',
+    type: AnswerTemplateUserResDto,
+  })
   @ManyToOne(() => UserEntity, (user) => user.answerTemplates, {
     onDelete: 'CASCADE',
   })
